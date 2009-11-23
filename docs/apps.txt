@@ -1,5 +1,5 @@
 Apps are just a bunch of functionallity wrapped up into a
-folder.  Bomer will look for the following files/folders
+folder.  Bomber will look for the following files/folders
 (all of them are optional):
 
 config.js
@@ -7,7 +7,7 @@ config.js
   apps: an array of apps to include
   
 routes.js
-  exports a router object (bomer/router.js)
+  exports a router object (bomber/router.js)
 
 views/<view-name>.js
   a view file exports functions (called actions to steal from Rails)

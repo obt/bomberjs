@@ -5,7 +5,7 @@
   routing
 *   make it so you can return the name of an app to use its router for the rest of the url
 
-  bomer.js can take commands:
+  bomber.js can take commands:
     startServer
 *   createApp
 

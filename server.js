@@ -110,7 +110,7 @@ Server.prototype.start = function() {
       }
       }).listen(server.options.port);
 
-  sys.puts('Bomer Server running at http://localhost:'+server.options.port);
+  sys.puts('Bomber Server running at http://localhost:'+server.options.port);
 };
 
 exports.Server = Server;
