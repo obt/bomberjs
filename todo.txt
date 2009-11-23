@@ -1,0 +1,14 @@
+  built-in views
+    5xx errors
+    4xx errors
+
+  routing
+*   make it so you can return the name of an app to use its router for the rest of the url
+
+  bomer.js can take commands:
+    startServer
+*   createApp
+
+  responses
+*   set cookies
+    set sessions

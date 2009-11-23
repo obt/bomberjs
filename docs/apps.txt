@@ -1,0 +1,13 @@
+Apps are just a bunch of functionallity wrapped up into a
+folder.  Bomer will look for the following files/folders
+(all of them are optional):
+
+config.js
+  // Stores configuration for this ap
+  apps: an array of apps to include
+  
+routes.js
+  exports a router object (bomer/router.js)
+
+views/<view-name>.js
+  a view file exports functions (called actions to steal from Rails)
