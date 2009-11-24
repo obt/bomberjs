@@ -1,7 +1,10 @@
 #! /usr/bin/env node
 
 var sys = require('sys');
-var BomberServer = require('./server').Server;
+
+require.paths.push(process.cwd()+'/..');
+
+var BomberServer = require('./lib/server').Server;
 
 var config = {
   port: 8000,
