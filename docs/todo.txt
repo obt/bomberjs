@@ -8,6 +8,8 @@
   bomber.js can take commands:
     startServer
 *   createApp
+    repl
+    startServer with node_debug
 
   responses
 *   set cookies

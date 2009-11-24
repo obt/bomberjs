@@ -7,7 +7,7 @@ config.js
   apps: an array of apps to include
   
 routes.js
-  exports a router object (bomber/router.js)
+  exports a router object (bomber/lib/router.js)
 
 views/<view-name>.js
   a view file exports functions (called actions to steal from Rails)
