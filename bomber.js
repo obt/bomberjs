@@ -2,7 +2,9 @@
 
 var sys = require('sys');
 
-require.paths.push(process.cwd()+'/..');
+var path = require('./lib/utils').path;
+
+require.paths.push(path.base(__filename)+'/..');
 
 var BomberServer = require('./lib/server').Server;
 
