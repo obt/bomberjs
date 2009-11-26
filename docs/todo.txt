@@ -1,16 +1,20 @@
-  built-in views
-    5xx errors
-    4xx errors
-
   routing
-*   make it so you can return the name of an app to use its router for the rest of the url
+    make it so you can return the name of an app to use its router for the rest of the url
+    in order to do that, we need to pass around the currently parse params
 
   bomber.js can take commands:
     startServer
-*   createApp
+    createApp
     repl
     startServer with node_debug
 
   responses
-*   set cookies
+    set cookies
     set sessions
+
+  HTTPStatusFactory objects
+    5xx errors
+    4xx errors
+    3xx redirects
+
+  logging, preferably something that matches the simpler parts of the log4j library
