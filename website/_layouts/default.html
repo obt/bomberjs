@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <title>{% if page.title %}{{ page.title }} &mdash; {% endif %}Bomber: a node.js javascript web framework</title>
+    <link href="{% mtimeinget /assets/favicon.png %}" rel="icon" />
+    <link rel="stylesheet" type="text/css" href="{% mtimeinget /assets/style.css %}" />
+    <link rel="alternate" type="application/atom+xml" href="/index.xml" title="Blog Posts" />
+
+    <!--[if IE]><script type="text/javascript" src="{% mtimeinget /assets/ie_html5_fix.js %}"></script><![endif]-->
+  </head>
+  <body>
+    <header id="top">
+      <h1>
+        <a href="/" title="The homepage for bomber.obtdev.com" id="home-link">Bomber</a>
+      </h1>
+      <h2>A <a href="http://nodejs.org/">node.js</a> javascript web framework</h2>
+    </header>
+
+    <nav id="main">
+      <ul>
+        <li><a href="/">Introduction</a></li>
+        <li><a href="/docs/">Documentation</a></li>
+        {% if page.doc_nav %}
+        <li>
+          <ul>
+            <li><a href="/docs/action.html">Action</a></li>
+            <li><a href="/docs/request.html">Request</a></li>
+            <li><a href="/docs/response.html">Response</a></li>
+            <li><a href="/docs/router.html">Router</a></li>
+            <li><a href="/docs/server.html">Server</a></li>
+          </ul>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+
+    {{ content }}
+
+    {% include analytics.txt %}
+  </body>
+</html>

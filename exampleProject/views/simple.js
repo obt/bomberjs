@@ -5,7 +5,7 @@ exports.index = function(request, response) {
 };
 exports.show = function(request, response) {
   if( request.params.format == 'json' ) {
-    return {a: 1, b: 'two', c: { name: 'three'}};
+    return {a: 1, b: 'two', c: { value: 'three'}};
   }
   else {
     return "show action";

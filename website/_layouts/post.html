@@ -1,0 +1,31 @@
+---
+layout: default
+---
+
+<article id="post">
+	<header>
+    <h1><a href="{{ page.url }}">{{ page.title }}</a></h1>
+		<p class="meta"><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date_to_string }}</time></p>
+	</header>
+
+	{{ content|css_path_to_ids }}
+</article>
+
+<section>
+  <h1>Have something to say in response to this post?</h1>
+  <p> <a href="mailto:benjamin@benjaminthomas.org">Send me an email</a> or <a href="http://twitter.com/home?status={{ "http://benjaminthomas.org"|html_escape }}{{ page.url|html_escape }}">Tweet about it</a>.</p>
+</section>
+
+{% if site.related_posts %}
+<section>
+	<h1>Possibly related entries</h1>
+
+	<dl class="timeline">
+		{% for post in site.related_posts limit:3 %}
+		<dt>{{ post.date | date: "%b %Y" }}</dt>
+		<dd><a href="{{ post.url }}">{{ post.title }}</a></dd>
+		{% endfor %}
+	</dl>
+</section>
+
+{% endif %}

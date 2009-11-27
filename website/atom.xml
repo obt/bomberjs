@@ -1,0 +1,33 @@
+---
+layout: none
+---
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+	<title>News for Bomber, a node.js web framework</title>
+	<link href="http://bomber.obtdev.com/atom.xml" rel="self"/>
+	<link href="http://bomber.obtdev.com/"/>
+	<updated>{{ site.time | date_to_xmlschema }}</updated>
+	<id>http://bomber.obtdev.com/</id>
+	<author>
+		<name>Benjamin Thomas or Omer Bar-or</name>
+		<email>admin@obtdev.com</email>
+	</author>
+
+	{% for post in site.posts limit:7 %}
+	<entry>
+    {% if post.author %}
+    <author>
+      <name>{{ post.author }}</name>
+      {% if post.email %}<email>{{ post.email }}</email>{% endif %}
+    </author>
+    {% endif %}
+    <title>{{ post.title }}</title>
+		<link href="http://bomber.obtdev.com{{ post.url }}"/>
+		<updated>{{ post.date | date_to_xmlschema }}</updated>
+    <id>tag:bomber.obtdev.com,2009-10-22:{{ post.id }}</id>
+		<content type="html">{{ post.content | xml_escape }}</content>
+	</entry>
+
+	{% endfor %}
+</feed>

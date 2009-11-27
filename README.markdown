@@ -1,9 +1,8 @@
-Bomber
-------
+A node.js web framework inspired by Rails, Django and anything else
+out there that has caught our eye.
 
-A node.js web framework inspired by rails, django and anything else
-out there that has caught my eye.
+Resources:
 
-Just started so, it doesn't have any templating or ORM stuff built-in.
-
-Or any instructions on how to use it.  Good luck. :)
++ [Main website and documentation](http://bomber.obtdev.com/)
++ [Blog post announcing the motivation](http://benjaminthomas.org/2009-11-20/designing-a-web-framework.html)
++ [Blog post discussing the design of the routing](http://benjaminthomas.org/2009-11-24/bomber-routing.html)
