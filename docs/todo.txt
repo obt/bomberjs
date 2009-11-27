@@ -1,6 +1,13 @@
+  testing
+    tests are run through a browser. Make requests: specify a url, request headers, method
+      and say the status code you want back, any headers, and then you can run assertions
+      against the result.  Can run them all or specific ones.
+
   routing
     make it so you can return the name of an app to use its router for the rest of the url
-    in order to do that, we need to pass around the currently parse params
+      in order to do that, we need to pass around the currently parse params
+    make it so format is appended to the url with a . (if you want).
+      And so that you can specify your default supported formats.
 
   bomber.js can take commands:
     startServer
