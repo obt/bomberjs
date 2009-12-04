@@ -3,6 +3,11 @@ layout: docs
 title: Documentation
 ---
 
+We just started writing Bomber, so the API is very much in a state of
+flux.  Because of this the best documentation is going to be the source
+code itself.  I have tried to be diligent about making sure to comment.
+So, when in doubt consult the source.
+
 The Documentation consists of the following sub-sections:
 
 Overviews

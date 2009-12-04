@@ -78,6 +78,47 @@
        y1="348.99167"
        x2="261.0546"
        y2="379.27521" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3590"
+       id="radialGradient3683"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.266405,0.25871407,-0.20827658,0.93831105,-22.999991,-81.757235)"
+       cx="427.5177"
+       cy="436.40472"
+       fx="427.5177"
+       fy="436.40472"
+       r="175.71428" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3590"
+       id="linearGradient3707"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.07294805,-0.03351489,0.03351489,0.07294805,294.28263,445.43984)"
+       x1="299.50128"
+       y1="348.99167"
+       x2="261.0546"
+       y2="379.27521" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3590"
+       id="linearGradient3723"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.07294805,-0.03351489,0.03351489,0.07294805,294.28263,445.43984)"
+       x1="299.50128"
+       y1="348.99167"
+       x2="261.0546"
+       y2="379.27521" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3590"
+       id="linearGradient3727"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.08015149,-0.0368244,0.0368244,0.08015149,357.66926,316.91036)"
+       x1="299.50128"
+       y1="348.99167"
+       x2="261.0546"
+       y2="379.27521" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -86,16 +127,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="308.23398"
-     inkscape:cy="135.97656"
+     inkscape:zoom="1.6249155"
+     inkscape:cx="320.19591"
+     inkscape:cy="152.62642"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1311"
      inkscape:window-height="857"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-x="1721"
+     inkscape:window-y="93"
      inkscape:window-maximized="0" />
   <metadata
      id="metadata7">
@@ -105,7 +146,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -268,5 +309,40 @@
          x="568.57855"
          y="584.58679"
          style="fill:#000000;stroke:none">A node.js javascript web framework</tspan></text>
+    <rect
+       style="fill:#eeeeee;fill-opacity:1;stroke:none"
+       id="rect2847"
+       width="16"
+       height="16"
+       x="388.33694"
+       y="332.24762"
+       inkscape:export-filename="/Users/benjamin/Programming/bomber/website/assets/favicon.png"
+       inkscape:export-xdpi="89.995308"
+       inkscape:export-ydpi="89.995308" />
+    <path
+       transform="matrix(0.03265351,-0.01500217,0.01563785,0.03403713,378.08995,329.49572)"
+       d="m 514.28572,483.79074 a 175.71428,168.57143 0 1 1 -351.42856,0 175.71428,168.57143 0 1 1 351.42856,0 z"
+       sodipodi:ry="168.57143"
+       sodipodi:rx="175.71428"
+       sodipodi:cy="483.79074"
+       sodipodi:cx="338.57144"
+       id="path3638"
+       style="fill:url(#radialGradient3683);fill-opacity:1;stroke:#333333;stroke-width:20.44246864"
+       sodipodi:type="arc" />
+    <path
+       sodipodi:nodetypes="ccsss"
+       id="path3640"
+       d="m 393.72673,333.81465 0.96486,0.79497 c 0.47848,0.45849 -0.12099,1.86051 -1.33881,3.13149 -1.21789,1.27099 -2.56176,1.89452 -3.07156,1.47112 l -0.98891,-0.82131"
+       style="fill:url(#linearGradient3727);fill-opacity:1;stroke:#333333;stroke-width:0.75;stroke-miterlimit:4" />
+    <path
+       transform="matrix(0.06102678,-0.06368698,0.06368698,0.06102678,352.10198,330.90814)"
+       d="m 302.68138,365.37747 a 36.134716,13.603658 0 1 1 -72.26943,0 36.134716,13.603658 0 1 1 72.26943,0 z"
+       sodipodi:ry="13.603658"
+       sodipodi:rx="36.134716"
+       sodipodi:cy="365.37747"
+       sodipodi:cx="266.54666"
+       id="path3642"
+       style="fill:#4d4d4d;fill-opacity:1;stroke:#333333;stroke-width:8.50282288;stroke-miterlimit:4;stroke-dasharray:none"
+       sodipodi:type="arc" />
   </g>
 </svg>

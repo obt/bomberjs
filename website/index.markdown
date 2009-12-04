@@ -8,16 +8,28 @@ out there that has caught our eye.
 
 We just started, so it is pretty bare bones at the moment.
 
+Warning!
+--------
+
+Right now the API is very much in a state of flux.  Seeing as how my first post announcing
+I was _thinking_ about writing a framework was about two weeks ago, I am still expirementing
+with the best way to make Bomber both intuitive and powerful.
+
+I am open to new ideas and feedback, so if you have any thoughts on ways to make Bomber
+better of find any bugs, please feel free to [email me](mailto:benjamin@benjaminthomas.org)
+or open [an issue on GitHub](http://github.com/obt/bomberjs/issues). 
+
 Relevant Reading
 ----------------
 
 + [Blog post announcing the motivation](http://benjaminthomas.org/2009-11-20/designing-a-web-framework.html)
 + [Blog post discussing the design of the routing](http://benjaminthomas.org/2009-11-24/bomber-routing.html)
++ [Blog post discussing the design of the actions](http://benjaminthomas.org/2009-11-29/bomber-actions.html)
 
 Getting the code
 ----------------
 
-[The Bomber source](http://github.com/bentomas/bomber) is located on GitHub.  
+The source code for Bomber is [located on GitHub](http://github.com/bentomas/bomber).  
 
 To check it out, run the following command:
 
@@ -68,3 +80,12 @@ exports.show = function(request, response) {
   }
 };
 {% endhighlight %}
+
+What's Ahead
+------------
+
+Right now my two priorities are:
+
+1. Finalizing (at least for now) the API for 'actions'
+2. Getting a comprehensive test suite. I want to make sure it does what I
+think it is doing.
