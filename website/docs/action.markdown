@@ -47,6 +47,7 @@ actually _do something_ with the result from this action, so it sends nothing
 to the client and instead passes the result to the callback.
 
 Public methods:
+---------------
 
 `addTask(function)`
 : Add a function to the end of the list of tasks to run.

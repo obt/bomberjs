@@ -86,6 +86,6 @@ What's Ahead
 
 Right now my two priorities are:
 
-1. Finalizing (at least for now) the API for 'actions'
+1. Finalizing (at least for now) the API for [actions](/docs/action.html).
 2. Getting a comprehensive test suite. I want to make sure it does what I
 think it is doing.
