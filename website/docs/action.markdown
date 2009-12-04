@@ -3,16 +3,19 @@ layout: docs
 title: Action
 ---
 
+**Note:** I am in the process of discussing some API changes to Actions so check
+back here in a week or so to see if things have changed!
+
 Action objects are instantiated for each request to the server.  Their main
 goal is making it easy to do asynchronous calls.  Really what they boil 
-down to at this point is a glorified [Deferred](http://api.dojotoolkit.org/jsdoc/1.3.2/dojo.Deferred)
+down to _at this point_ is a glorified [Deferred](http://api.dojotoolkit.org/jsdoc/1.3.2/dojo.Deferred)
 with less functionallity.
 
 I recommend reading [this blog post](http://benjaminthomas.org/2009-11-29/bomber-actions.html) 
 for the details of their current design.
 
 At their simplest, Actions run a series of tasks. A task is just a function. All
-tasks receive two parameters, a [request](/docs/request.html] and a
+tasks receive two parameters, a [request](/docs/request.html) and a
 [response](/docs/response.html).  Additionally, they receive the return value of
 the last task.
 
