@@ -29,12 +29,12 @@ Relevant Reading
 Getting the code
 ----------------
 
-The source code for Bomber is [located on GitHub](http://github.com/bentomas/bomber).  
+The source code for Bomber is [located on GitHub](http://github.com/obt/bomberjs).  
 
 To check it out, run the following command:
 
 {% highlight sh %}
-git checkout git://github.com/bentomas/bomber.git
+git checkout git://github.com/obt/bomberjs.git
 {% endhighlight %}
 
 

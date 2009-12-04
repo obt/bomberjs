@@ -23,9 +23,15 @@
     set cookies
     set sessions
 
-  HTTPStatus objects
+  HTTPException objects for throwing in actions to change the course of an Action
     5xx errors
     4xx errors
     3xx redirects
 
+  Sessions
+    An api for handling sessions
+    Included in Bomber: cookie based sessions, preferably signed. 
+      checkout: http://github.com/simonw/django-signed
+
   logging for the server, preferably something that matches the simpler parts of the log4j library
+    this should probably be an external library
