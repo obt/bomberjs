@@ -33,7 +33,7 @@ API
 : A wrapper around the node.js `http.ServerResponse` object.  Adds some
   niceties.
 
-[Router](/docs/routing.html)
+[Router](/docs/router.html)
 : A Router is used to turn a URL into an action.
 
 [Server](/docs/server.html)
