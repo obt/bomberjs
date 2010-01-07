@@ -6,12 +6,12 @@ var path = require('./lib/utils').path;
 
 // apps depend on bomber being on the path
 try {
-  var BomberServer = require('bomber/lib/server').Server;
+  var BomberServer = require('bomberjs/lib/server').Server;
 }
 catch(err) {
-  if( err.message == "Cannot find module 'bomber/lib/server'" ) {
+  if( err.message == "Cannot find module 'bomberjs/lib/server'" ) {
     require.paths.push(path.base(__filename)+'/..');
-    var BomberServer = require('./lib/server').Server;
+    var BomberServer = require('bomberjs/lib/server').Server;
   }
 }
 
