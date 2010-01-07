@@ -80,7 +80,7 @@ expected = {
 };
 assert.deepEqual(expected, route);
 
-// test _parseAppKey
+// test _parseAppPath
 var app_keys = {
   '': [],
   '.': [],
@@ -100,17 +100,17 @@ var app_keys = {
   '/testApp/sub/app/stuff': ['sub', 'app/stuff']
 };
 for(var key in app_keys) {
-  assert.deepEqual(app_keys[key], app._parseAppKey(key));
+  assert.deepEqual(app_keys[key], app._parseAppPath(key));
 }
 
-// test that App.pathToKey does so properly
-assert.equal(path.filename(process.cwd()), App.pathToKey('.'));
-assert.equal('path', App.pathToKey('./my/path'));
-assert.equal('path', App.pathToKey('/my/path'));
-assert.equal('path', App.pathToKey('my/path'));
-assert.equal('path', App.pathToKey('./path'));
-assert.equal('path', App.pathToKey('/path'));
-assert.equal('path', App.pathToKey('path'));
+// test that App.modulePathToKey does so properly
+assert.equal(path.filename(process.cwd()), App.modulePathToKey('.'));
+assert.equal('path', App.modulePathToKey('./my/path'));
+assert.equal('path', App.modulePathToKey('/my/path'));
+assert.equal('path', App.modulePathToKey('my/path'));
+assert.equal('path', App.modulePathToKey('./path'));
+assert.equal('path', App.modulePathToKey('/path'));
+assert.equal('path', App.modulePathToKey('path'));
 
 function count(object) {
   var count = 0;
