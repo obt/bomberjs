@@ -8,9 +8,17 @@ title: bomber.js
 Right now all it can do is start a Bomber [Server](/docs/server.html).
 
 It takes one optional argument, the name or the path of a Bomber app.  This argument is
-used by the `require` command, so [read up on how that works](http://nodejs.org/api.html#_modules)
-to make sure Bomber will be able to find your app.
+used by the Node `require` command, so [read up on how that works](http://nodejs.org/api.html#_modules)
+to make sure Bomber will be able to find your app. If the argument isn't supplied it
+uses the current directory.
+
+Examples
+--------
 
 {% highlight sh %}
-./bomber.js ./exampleProject
+./bomber.js server
+{% endhighlight %}
+
+{% highlight sh %}
+./bomber.js --app ./exampleProject server
 {% endhighlight %}
