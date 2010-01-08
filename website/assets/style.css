@@ -20,6 +20,13 @@ ul, ol { margin-left: 0; padding-left: 30px; }
 
 footer { text-align: right; }
 
+div.warning {
+  background-color: #ff9999;
+  border: 1px solid #660000;
+  padding: 5px;
+  margin: 0 20px;
+}
+
 #top {
   max-width: 700px;
   margin: 0;
