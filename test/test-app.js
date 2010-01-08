@@ -1,9 +1,9 @@
 var sys = require('sys');
 var assert = require('assert');
+var path = require('path');
 
-var path = require('../lib/utils').path;
-// the testing apps assume that bomber be on the path.
-require.paths.push(path.base(__filename)+'/../..');
+// the testing apps assume that bomberjs is on the path.
+require.paths.push(path.dirname(__filename)+'/../..');
 
 var App = require('bomberjs/lib/app').App;
 
