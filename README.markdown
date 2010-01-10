@@ -2,7 +2,7 @@ Bomber is a node.js web framework inspired by Rails, Django and anything else ou
 
 Main website and documentation: http://bomber.obtdev.com/
 
-Warning! Right now the API is very much in a state of flux.  We are still expirementing with the best way to make Bomber both intuitive and powerful.  Expect things to change a lot for the forseeable future.
+Warning! Right now the API is very much in a state of flux.  We are still experimenting with the best way to make Bomber both intuitive and powerful.  Expect things to change a lot for the forseeable future.
 
 Getting up and running
 ----------------------
@@ -14,7 +14,7 @@ The source code for Bomber is [located on GitHub][bomber-src].  To check it out,
 The easiest way to try it out is to `cd` into the example project and run the following command to start the server (assuming you have [Node] installed and in your path):
 
     cd bomberjs/exampleProject
-    ./bomber.js server
+    ../bomber.js server
 
 
 Brief summary
@@ -56,7 +56,7 @@ Here is an example view file:
 Participating
 -------------
 
-We are open to new ideas and feedback, so if you have any thoughts on ways to make Bomber better, or find any bugs, please feel free to [participate in the Google Group](http://groups.google.com/group/bomberjs) or open [an issue on GitHub](http://github.com/obt/bomberjs/issues). 
+We are open to new ideas and feedback, so if you have any thoughts on ways to make Bomber better, or find any bugs, please feel free to [participate in the Google Group](http://groups.google.com/group/bomberjs). 
 
 Relevant Reading
 ----------------

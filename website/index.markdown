@@ -6,7 +6,7 @@ title: Introducing Bomber
 Bomber is a node.js web framework inspired by Rails, Django and anything else out there that has caught our eye.
 
 <div class="warning">
-Warning! Right now the API is very much in a state of flux.  We are still expirementing with the best way to make Bomber both intuitive and powerful.  Expect things to change a lot for the forseeable future.
+Warning! Right now the API is very much in a state of flux.  We are still experimenting with the best way to make Bomber both intuitive and powerful.  Expect things to change a lot for the forseeable future.
 </div>
 
 Getting up and running
@@ -71,7 +71,7 @@ exports.show = function(request, response) {
 Participating
 -------------
 
-We are open to new ideas and feedback, so if you have any thoughts on ways to make Bomber better, or find any bugs, please feel free to [participate in the Google Group](http://groups.google.com/group/bomberjs) or open [an issue on GitHub](http://github.com/obt/bomberjs/issues). 
+We are open to new ideas and feedback, so if you have any thoughts on ways to make Bomber better, or find any bugs, please feel free to [participate in the Google Group](http://groups.google.com/group/bomberjs). 
 
 Relevant Reading
 ----------------
