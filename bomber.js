@@ -31,7 +31,7 @@ dir.forEach(function(file) {
       return;
     }
     var p = 'bomberjs/lib/tasks/'+file.substr(0,file.length-3);
-    tasks[path.filename(p)] = p;
+    tasks[path.basename(p)] = p;
   });
 
 

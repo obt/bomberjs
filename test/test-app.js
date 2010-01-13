@@ -104,7 +104,7 @@ for(var key in app_keys) {
 }
 
 // test that App.modulePathToKey does so properly
-assert.equal(path.filename(process.cwd()), App.modulePathToKey('.'));
+assert.equal(path.basename(process.cwd()), App.modulePathToKey('.'));
 assert.equal('path', App.modulePathToKey('./my/path'));
 assert.equal('path', App.modulePathToKey('/my/path'));
 assert.equal('path', App.modulePathToKey('my/path'));
