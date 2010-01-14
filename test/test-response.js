@@ -3,31 +3,7 @@ var assert = require('assert');
 
 var BomberResponse = require('../lib/response').Response;
 
-var MockResponse = function() {
-  this.status = null;
-  this.headers = null;
-  this.body = [];
-  this.finished = false;
-};
-MockResponse.prototype.sendHeader = function(status, headers) {
-  if( this.finished ) {
-    throw "Already finished";
-  }
-  this.status = status;
-  this.headers = headers;
-};
-MockResponse.prototype.sendBody = function(chunk, encoding) {
-  if( this.finished ) {
-    throw "Already finished";
-  }
-  this.body.push([chunk, encoding]);
-};
-MockResponse.prototype.finish = function() {
-  if( this.finished ) {
-    throw "Already finished";
-  }
-  this.finished = true;
-};
+var MockResponse = require('./mocks').MockResponse;
 
 var tests = {
   "test simple": function() {
