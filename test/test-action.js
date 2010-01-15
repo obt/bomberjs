@@ -9,9 +9,6 @@ var Response = require('../lib/response').Response;
 var Request = require('../lib/request').Request;
 var processAction = require('../lib/action').processAction;
 
-var HTTP301MovedPermanently = require('../lib/http_responses').HTTP301MovedPermanently;
-var HTTP303SeeOther = require('../lib/http_responses').HTTP303SeeOther;
-
 var tests = {
   "test return string": function() {
     var mrequest = new MockRequest('GET', '/');
@@ -19,7 +16,7 @@ var tests = {
     var request = new Request(mrequest, {"href": "/", "pathname": "/"}, {});
     var response = new Response(mresponse);
 
-    var action = function(req, request) {
+    var action = function(req, res) {
       return "hi";
     }
     processAction(request, response, action);
@@ -35,7 +32,7 @@ var tests = {
     var response = new Response(mresponse);
 
     var obj = { a: 1, b: 2 };
-    var action = function(req, request) {
+    var action = function(req, res) {
       return obj;
     }
     processAction(request, response, action);
@@ -50,8 +47,8 @@ var tests = {
     var request = new Request(mrequest, {"href": "/", "pathname": "/"}, {});
     var response = new Response(mresponse);
 
-    var action = function(req, request) {
-      return new HTTP301MovedPermanently('http://google.com');
+    var action = function(req, res) {
+      return new res.build.HTTP301MovedPermanently('http://google.com');
     }
     processAction(request, response, action);
 
@@ -65,7 +62,7 @@ var tests = {
     var response = new Response(mresponse);
 
     var promise = new Promise();
-    var action = function(req, request) {
+    var action = function(req, res) {
       return promise;
     }
     processAction(request, response, action);
@@ -81,8 +78,8 @@ var tests = {
     var request = new Request(mrequest, {"href": "/", "pathname": "/"}, {});
     var response = new Response(mresponse);
 
-    var action = function(req, request) {
-      throw new HTTP301MovedPermanently('http://google.com');
+    var action = function(req, res) {
+      throw new res.build.redirect('http://google.com');
     }
     processAction(request, response, action);
 
@@ -97,9 +94,9 @@ var tests = {
     var response = new Response(mresponse);
 
     var promise = new Promise();
-    var action = function(req, request) {
+    var action = function(req, res) {
       promise.addCallback(function(arg) {
-          return new HTTP303SeeOther('http://google.com');
+          return new res.build.redirect('http://google.com',303);
         });
       return promise;
     }
@@ -121,14 +118,14 @@ var tests = {
     var gotHere1 = false;
     var gotHere2 = false;
     var didntGetHere = true;
-    var action = function(req, request) {
+    var action = function(req, res) {
       promise.addCallback(function(arg) {
           gotHere1 = true;
-          return new HTTP303SeeOther('http://google.com');
+          return new res.build.redirect('http://google.com',303);
         });
       promise.addCallback(function(arg) {
           gotHere2 = true;
-          throw new HTTP301MovedPermanently('http://www.google.com');
+          throw new res.build.redirect('http://www.google.com',301);
         });
       promise.addCallback(function(arg) {
           didntGetHere = false;
@@ -154,7 +151,7 @@ var tests = {
     var request = new Request(mrequest, {"href": "/", "pathname": "/"}, {});
     var response = new Response(mresponse);
 
-    var action = function(req, request) {
+    var action = function(req, res) {
       throw new Error();
     }
     processAction(request, response, action);
@@ -168,7 +165,7 @@ var tests = {
     var response = new Response(mresponse);
 
     var promise = new Promise();
-    var action = function(req, request) {
+    var action = function(req, res) {
       promise.addCallback(function(arg) {
           throw new Error();
         });
@@ -179,7 +176,26 @@ var tests = {
     promise.callback('hey');
 
     assert.equal(500, mresponse.status);
-  }
+  },
+  "test httpresponse": function() {
+    var mrequest = new MockRequest('GET', '/');
+    var mresponse = new MockResponse();
+    var request = new Request(mrequest, {"href": "/", "pathname": "/"}, {});
+    var response = new Response(mresponse);
+
+    var action = function(req, res) {
+      var r = new res.build.HTTPResponse('response');
+      r.status = 101;
+      r.contentType = 'text';
+      r.encoding = 'asci';
+      return r;
+    }
+    processAction(request, response, action);
+
+    assert.equal(101, mresponse.status);
+    assert.equal('text', mresponse.headers['Content-Type']);
+    assert.equal('response', mresponse.bodyText);
+  },
 };
 
 for( var test in tests) {
