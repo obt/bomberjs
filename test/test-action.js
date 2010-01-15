@@ -147,6 +147,38 @@ var tests = {
     assert.equal(301, mresponse.status);
     assert.equal('http://www.google.com', mresponse.headers['Location']);
     assert.equal('', mresponse.bodyText);
+  },
+  "test throw error": function() {
+    var mrequest = new MockRequest('GET', '/');
+    var mresponse = new MockResponse();
+    var request = new Request(mrequest, {"href": "/", "pathname": "/"}, {});
+    var response = new Response(mresponse);
+
+    var action = function(req, request) {
+      throw new Error();
+    }
+    processAction(request, response, action);
+
+    assert.equal(500, mresponse.status);
+  },
+  "test throw error from promise": function() {
+    var mrequest = new MockRequest('GET', '/');
+    var mresponse = new MockResponse();
+    var request = new Request(mrequest, {"href": "/", "pathname": "/"}, {});
+    var response = new Response(mresponse);
+
+    var promise = new Promise();
+    var action = function(req, request) {
+      promise.addCallback(function(arg) {
+          throw new Error();
+        });
+      return promise;
+    }
+    processAction(request, response, action);
+
+    promise.callback('hey');
+
+    assert.equal(500, mresponse.status);
   }
 };
 
