@@ -6,6 +6,7 @@ var path = require('path');
 require.paths.push(path.dirname(__filename)+'/../..');
 
 var App = require('bomberjs/lib/app').App;
+var app_errors = require('bomberjs/lib/app').errors;
 
 // Since all parts of an app are optional when we create an
 // App object if it doesn't exist we can't verify this.
@@ -29,7 +30,12 @@ assert.equal(null, app.apps.subApp1.config);
 // can't get a view that doesn't exist
 assert.throws(function() {
     app.getView('non-existant')
-  });
+  }, app_errors.ViewNotFoundError );
+
+// can't get a view from an app that doesn't exist
+assert.throws(function() {
+    app.getView('view1', 'not-existant-app')
+  }, app_errors.AppNotFoundError );
 
 // simple view file exists
 assert.ok(app.getView('view1'));
@@ -79,6 +85,21 @@ expected = {
   "params": {id: "1"}
 };
 assert.deepEqual(expected, route);
+
+assert.throws(function() {
+    app.getAction({ app: 'non-existant', view: 'subApp1view1', action: 'action'});
+  }, app_errors.AppNotFoundError);
+assert.throws(function() {
+    app.getAction({ app: 'subApp1', view: 'non-existant', action: 'action'});
+  }, app_errors.ViewNotFoundError);
+assert.throws(function() {
+    app.getAction({ app: 'subApp1', view: 'subApp1view1', action: 'non-existant'});
+  }, app_errors.ActionNotFoundError);
+
+assert.ok(app.getAction({ app: 'subApp1', view: 'subApp1view1', action: 'action'}));
+
+var func = function() {};
+assert.equal(func, app.getAction({action: func}));
 
 // test _parseAppPath
 var app_keys = {
