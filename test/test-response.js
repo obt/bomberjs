@@ -1,5 +1,6 @@
 var sys = require('sys');
 var assert = require('assert');
+var path = require('path');
 
 var BomberResponse = require('../lib/response').Response;
 
@@ -21,7 +22,7 @@ var tests = {
     var mr = new MockResponse();
     var br = new BomberResponse(mr);
 
-    br._finishOnSend = false;
+    br.finishOnSend = false;
 
     br.send('Hi there');
     assert.ok(!mr.finished);
@@ -129,7 +130,37 @@ var tests = {
     br.send('Hi there');
 
     assert.equal(404, mr.status);
+  },
+  "test send file": function() {
+    var mr = new MockResponse();
+    var br = new BomberResponse(mr);
+    
+    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
+
+    assert.equal(200, mr.status);
+    assert.equal('image/png', mr.headers['Content-Type']);
+    assert.equal('this is a fake image\n', mr.bodyText);
+
+    assert.ok(mr.finished);
+  },
+  "test send file doesn't exist": function() {
+    var mr = new MockResponse();
+    var br = new BomberResponse(mr);
+    
+    br.sendFile('non-existant').wait();
+
+    assert.equal(404, mr.status);
+    assert.ok(mr.finished);
+  },
+  "test send file can override content type": function() {
+    var mr = new MockResponse();
+    var br = new BomberResponse(mr);
+    
+    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png', 'image/jpg').wait();
+
+    assert.equal('image/jpg', mr.headers['Content-Type']);
   }
+
 };
 
 for( var test in tests) {
