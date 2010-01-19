@@ -147,20 +147,51 @@ var tests = {
     var mr = new MockResponse();
     var br = new BomberResponse(mr);
     
-    br.sendFile('non-existant').wait();
-
-    assert.equal(404, mr.status);
-    assert.ok(mr.finished);
+    assert.throws(function() {
+        br.sendFile('non-existant').wait();
+      });
   },
-  "test send file can override content type": function() {
+  "test send file will override content type": function() {
     var mr = new MockResponse();
     var br = new BomberResponse(mr);
     
+    br.contentType = 'text/plain';
+    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png', 'image/jpg').wait();
+    assert.equal('image/jpg', mr.headers['Content-Type']);
+  },
+  "test send file with finishOnSend false": function() {
+    var mr = new MockResponse();
+    var br = new BomberResponse(mr);
+
+    br.finishOnSend = false;
+    
     br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png', 'image/jpg').wait();
 
-    assert.equal('image/jpg', mr.headers['Content-Type']);
-  }
+    assert.ok(!mr.finished);
+  },
+  "test send file with other sends": function() {
+    var mr = new MockResponse();
+    var br = new BomberResponse(mr);
 
+    br.finishOnSend = false;
+    
+    br.send('one');
+    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png', 'image/jpg').wait();
+    br.send('two');
+
+    assert.equal('onethis is a fake image\ntwo', mr.bodyText);
+  },
+  "test send file doesn't resend headers": function() {
+    var mr = new MockResponse();
+    var br = new BomberResponse(mr);
+
+    br.sendHeaders();
+    assert.ok(mr.headers);
+    mr.headers = null;
+    assert.ok(!mr.headers);
+    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png', 'image/jpg').wait();
+    assert.ok(!mr.headers);
+  }
 };
 
 for( var test in tests) {
