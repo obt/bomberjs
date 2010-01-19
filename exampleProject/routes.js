@@ -9,6 +9,9 @@ r.add('/section', { view: 'simple', action: 'section' })
 
 r.add('/section/:id', { view: 'simple', action: 'show', id: '[0-9]+' })
 
+r.addFolder();
+r.addFolder({path:'/photos/'});
+
 // default catch all routes
 r.add('/:view/:action/:id');
 r.add('/:view/:action');
