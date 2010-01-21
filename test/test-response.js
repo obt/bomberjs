@@ -3,7 +3,6 @@ var assert = require('assert');
 var path = require('path');
 
 var BomberResponse = require('../lib/response').Response;
-
 var MockResponse = require('./mocks').MockResponse;
 
 var tests = {
@@ -14,9 +13,9 @@ var tests = {
     br.send('Hi there');
 
     assert.equal(200, mr.status);
-    assert.equal("text/html; utf8", mr.headers['Content-Type']);
     assert.ok(mr.finished);
     assert.equal(1, mr.body.length);
+    assert.equal('Hi there', mr.bodyText);
   },
   "test finish on send": function() {
     var mr = new MockResponse();
@@ -76,7 +75,15 @@ var tests = {
         br.send('hi there');
       });
   },
-  "test set content type through variable": function() {
+  "test Content-Type set automatically": function() {
+    var mr = new MockResponse();
+    var br = new BomberResponse(mr);
+    
+    br.send('Hi there');
+
+    assert.equal('text/html; charset=UTF-8', mr.headers['Content-Type']);
+  },
+  "test Content-Type set through variable": function() {
     var mr = new MockResponse();
     var br = new BomberResponse(mr);
     
@@ -85,7 +92,7 @@ var tests = {
 
     assert.equal('something', mr.headers['Content-Type']);
   },
-  "test set content type through setHeader": function() {
+  "test Content-Type set through setHeader": function() {
     var mr = new MockResponse();
     var br = new BomberResponse(mr);
     
@@ -94,7 +101,7 @@ var tests = {
 
     assert.equal('something', mr.headers['Content-Type']);
   },
-  "test set content type through headers": function() {
+  "test Content-Type set through headers": function() {
     var mr = new MockResponse();
     var br = new BomberResponse(mr);
     
@@ -103,16 +110,7 @@ var tests = {
 
     assert.equal('something', mr.headers['Content-Type']);
   },
-  "test encoding gets added to contenttype if contenttype is text/something": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
-    
-    br.contentType = 'text/something';
-    br.send('Hi there');
-
-    assert.equal('text/something; utf8', mr.headers['Content-Type']);
-  },
-  "test content type gets overriden by explicitly set header": function() {
+  "test Content-Type gets overriden by explicitly set header": function() {
     var mr = new MockResponse();
     var br = new BomberResponse(mr);
     
@@ -121,6 +119,34 @@ var tests = {
     br.send('Hi there');
 
     assert.equal('something', mr.headers['Content-Type']);
+  },
+  "test charset set automatically if known Content-Type": function() {
+    var mr = new MockResponse();
+    var br = new BomberResponse(mr);
+    
+    br.contentType = 'text/html';
+    br.send('Hi there');
+
+    assert.equal('text/html; charset=UTF-8', mr.headers['Content-Type']);
+  },
+  "test charset not set automatically if unknown Content-Type": function() {
+    var mr = new MockResponse();
+    var br = new BomberResponse(mr);
+    
+    br.contentType = 'unknown';
+    br.send('Hi there');
+
+    assert.equal('unknown', mr.headers['Content-Type']);
+  },
+  "test charset can be explicitly set": function() {
+    var mr = new MockResponse();
+    var br = new BomberResponse(mr);
+    
+    br.contentType = 'unknown';
+    br.charset = 'CHARSET';
+    br.send('Hi there');
+
+    assert.equal('unknown; charset=CHARSET', mr.headers['Content-Type']);
   },
   "test status can be set": function() {
     var mr = new MockResponse();
@@ -138,7 +164,6 @@ var tests = {
     br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
 
     assert.equal(200, mr.status);
-    assert.equal('image/png', mr.headers['Content-Type']);
     assert.equal('this is a fake image\n', mr.bodyText);
 
     assert.ok(mr.finished);
@@ -151,13 +176,20 @@ var tests = {
         br.sendFile('non-existant').wait();
       });
   },
-  "test send file will override content type": function() {
+  "test send file will set Content-Type": function() {
     var mr = new MockResponse();
     var br = new BomberResponse(mr);
     
-    br.contentType = 'text/plain';
-    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png', 'image/jpg').wait();
-    assert.equal('image/jpg', mr.headers['Content-Type']);
+    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
+    assert.equal('image/png', mr.headers['Content-Type']);
+  },
+  "test send file will not override Content-Type": function() {
+    var mr = new MockResponse();
+    var br = new BomberResponse(mr);
+    
+    br.contentType = 'not/image';
+    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
+    assert.equal('not/image', mr.headers['Content-Type']);
   },
   "test send file with finishOnSend false": function() {
     var mr = new MockResponse();
@@ -165,7 +197,7 @@ var tests = {
 
     br.finishOnSend = false;
     
-    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png', 'image/jpg').wait();
+    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
 
     assert.ok(!mr.finished);
   },
@@ -176,7 +208,7 @@ var tests = {
     br.finishOnSend = false;
     
     br.send('one');
-    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png', 'image/jpg').wait();
+    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
     br.send('two');
 
     assert.equal('onethis is a fake image\ntwo', mr.bodyText);
@@ -189,9 +221,16 @@ var tests = {
     assert.ok(mr.headers);
     mr.headers = null;
     assert.ok(!mr.headers);
-    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png', 'image/jpg').wait();
+    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
     assert.ok(!mr.headers);
-  }
+  },
+  "test send file resets encoding after it is finished": function() {
+    var mr = new MockResponse();
+    var br = new BomberResponse(mr);
+
+    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
+    assert.equal(BomberResponse.__defaultEncoding, br.encoding);
+  },
 };
 
 for( var test in tests) {
