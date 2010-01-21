@@ -2,19 +2,19 @@ var sys = require('sys');
 var assert = require('assert');
 var Promise = require('../lib/promise').Promise;
 
+var BomberResponse = require('../lib/response').Response;
+var BomberRequest = require('../lib/request').Request;
+var processAction = require('../lib/action').processAction;
+
 var MockRequest = require('./mocks').MockRequest;
 var MockResponse = require('./mocks').MockResponse;
-
-var Response = require('../lib/response').Response;
-var Request = require('../lib/request').Request;
-var processAction = require('../lib/action').processAction;
 
 var tests = {
   "test return string": function() {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
-    var request = new Request(mrequest, {"href": "/", "pathname": "/"}, {});
-    var response = new Response(mresponse);
+    var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
+    var response = new BomberResponse(mresponse);
 
     var action = function(req, res) {
       return "hi";
@@ -22,14 +22,14 @@ var tests = {
     processAction(request, response, action);
 
     assert.equal(200, mresponse.status);
-    assert.equal('text/html; utf8', mresponse.headers['Content-Type']);
+    assert.equal('text/html; charset=UTF-8', mresponse.headers['Content-Type']);
     assert.equal('hi', mresponse.bodyText);
   },
   "test return object": function() {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
-    var request = new Request(mrequest, {"href": "/", "pathname": "/"}, {});
-    var response = new Response(mresponse);
+    var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
+    var response = new BomberResponse(mresponse);
 
     var obj = { a: 1, b: 2 };
     var action = function(req, res) {
@@ -38,14 +38,14 @@ var tests = {
     processAction(request, response, action);
 
     assert.equal(200, mresponse.status);
-    assert.equal('text/json; utf8', mresponse.headers['Content-Type']);
+    assert.equal('application/json', mresponse.headers['Content-Type']);
     assert.deepEqual(obj, JSON.parse(mresponse.bodyText));
   },
   "test return http response": function() {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
-    var request = new Request(mrequest, {"href": "/", "pathname": "/"}, {});
-    var response = new Response(mresponse);
+    var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
+    var response = new BomberResponse(mresponse);
 
     var action = function(req, res) {
       return new res.build.HTTP301MovedPermanently('http://google.com');
@@ -58,8 +58,8 @@ var tests = {
   "test return promise": function() {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
-    var request = new Request(mrequest, {"href": "/", "pathname": "/"}, {});
-    var response = new Response(mresponse);
+    var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
+    var response = new BomberResponse(mresponse);
 
     var promise = new Promise();
     var action = function(req, res) {
@@ -75,8 +75,8 @@ var tests = {
   "test throw http response": function() {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
-    var request = new Request(mrequest, {"href": "/", "pathname": "/"}, {});
-    var response = new Response(mresponse);
+    var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
+    var response = new BomberResponse(mresponse);
 
     var action = function(req, res) {
       throw new res.build.redirect('http://google.com');
@@ -90,8 +90,8 @@ var tests = {
   "test return promise return response": function() {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
-    var request = new Request(mrequest, {"href": "/", "pathname": "/"}, {});
-    var response = new Response(mresponse);
+    var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
+    var response = new BomberResponse(mresponse);
 
     var promise = new Promise();
     var action = function(req, res) {
@@ -111,8 +111,8 @@ var tests = {
   "test return promise throw response": function() {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
-    var request = new Request(mrequest, {"href": "/", "pathname": "/"}, {});
-    var response = new Response(mresponse);
+    var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
+    var response = new BomberResponse(mresponse);
 
     var promise = new Promise();
     var gotHere1 = false;
@@ -148,8 +148,8 @@ var tests = {
   "test throw error": function() {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
-    var request = new Request(mrequest, {"href": "/", "pathname": "/"}, {});
-    var response = new Response(mresponse);
+    var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
+    var response = new BomberResponse(mresponse);
 
     var action = function(req, res) {
       throw new Error();
@@ -161,8 +161,8 @@ var tests = {
   "test throw error from promise": function() {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
-    var request = new Request(mrequest, {"href": "/", "pathname": "/"}, {});
-    var response = new Response(mresponse);
+    var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
+    var response = new BomberResponse(mresponse);
 
     var promise = new Promise();
     var action = function(req, res) {
@@ -180,8 +180,8 @@ var tests = {
   "test httpresponse": function() {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
-    var request = new Request(mrequest, {"href": "/", "pathname": "/"}, {});
-    var response = new Response(mresponse);
+    var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
+    var response = new BomberResponse(mresponse);
 
     var action = function(req, res) {
       var r = new res.build.HTTPResponse('response');
