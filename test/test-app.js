@@ -47,8 +47,8 @@ assert.ok(subAppView);
 assert.equal(1, count(subAppView));
 
 // test that we properly load in the routes
-assert.equal(1, app.router.routes.length);
-assert.equal(2, app.apps.subApp1.router.routes.length);
+assert.equal(2, app.router._routes.length);
+assert.equal(2, app.apps.subApp1.router._routes.length);
 
 // getRoute will pass the routing along if an app_key is passed in that
 // points to a sub app

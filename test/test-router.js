@@ -1,7 +1,15 @@
 var sys = require('sys');
 var assert = require('assert');
+var path = require('path');
 
 var Router = require('../lib/router').Router;
+
+var BomberResponse = require('../lib/response').Response;
+var BomberRequest = require('../lib/request').Request;
+
+var MockRequest = require('./mocks').MockRequest;
+var MockResponse = require('./mocks').MockResponse;
+
 
 // Simple routes
 var r = new Router();
@@ -91,4 +99,107 @@ function runTestsOnRouter(router, tests) {
       //sys.p(test[0]);
       assert.deepEqual(test[1], route);
     });
+}
+
+var addFolder_tests = {
+  "__setup": function() {
+    this.r = new Router();
+    this.r.path = path.dirname(__filename)+'/fixtures/testApp/routes.js';
+  },
+  "test addFolder adds route": function() {
+    this.r.addFolder();
+    assert.equal(1, this.r._routes.length);
+  },
+  "test addFolder adds route with no path specified": function() {
+    this.r.addFolder();
+
+    var route = this.r.findRoute('GET','/resources/file.txt');
+    assert.ok(route.action.action);
+  },
+  "test addFolder adds route with path specified": function() {
+    this.r.addFolder({path: '/media/'});
+
+    var route = this.r.findRoute('GET','/media/file.txt');
+    assert.ok(route.action.action);
+  },
+  "test addFolder adds route with no folder specified": function() {
+    this.r.addFolder();
+
+    var route = this.r.findRoute('GET','/resources/file.txt');
+    assert.equal(route.params.folder, './resources/');
+  },
+  "test addFolder adds route with folder specified": function() {
+    this.r.addFolder({folder: '/path/to/folder/'});
+
+    var route = this.r.findRoute('GET','/resources/file.txt');
+    assert.equal(route.params.folder, '/path/to/folder/');
+  },
+  "test route gets filename correctly": function() {
+    this.r.addFolder({folder: '/path/to/folder/'});
+
+    var route = this.r.findRoute('GET','/resources/file.txt');
+    assert.equal(route.params.filename, 'file.txt');
+  },
+  "test generate function serves file": function() {
+    this.r.addFolder();
+
+    var url = '/resources/file.txt';
+
+    var route = this.r.findRoute('GET',url);
+
+    var mrequest = new MockRequest('GET', url);
+    var mresponse = new MockResponse();
+    var request = new BomberRequest(mrequest, {"href": url, "pathname": url}, route);
+    var response = new BomberResponse(mresponse);
+
+    route.action.action(request, response).wait();
+
+    assert.equal(200, mresponse.status);
+    assert.equal('text\n', mresponse.bodyText);
+  },
+  "test generate function serves file from absolute folder": function() {
+    this.r.addFolder({folder: path.dirname(__filename)+'/fixtures/testApp/resources/'});
+
+    var url = '/resources/file.txt';
+
+    var route = this.r.findRoute('GET',url);
+
+    var mrequest = new MockRequest('GET', url);
+    var mresponse = new MockResponse();
+    var request = new BomberRequest(mrequest, {"href": url, "pathname": url}, route);
+    var response = new BomberResponse(mresponse);
+
+    route.action.action(request, response).wait();
+
+    assert.equal(200, mresponse.status);
+  },
+  "test returns 404 for non-existant file": function() {
+    this.r.addFolder({folder: path.dirname(__filename)+'/fixtures/testApp/resources/'});
+
+    var url = '/resources/non-existant';
+
+    var route = this.r.findRoute('GET',url);
+
+    var mrequest = new MockRequest('GET', url);
+    var mresponse = new MockResponse();
+    var request = new BomberRequest(mrequest, {"href": url, "pathname": url}, route);
+    var response = new BomberResponse(mresponse);
+
+    var http_response = route.action.action(request, response).wait();
+
+    assert.equal('HTTP404NotFound', http_response.name);
+  },
+};
+
+for( var test in addFolder_tests) {
+  if( test == '__setup' ) {
+    continue;
+  };
+  if('__setup' in addFolder_tests) {
+    var obj = new addFolder_tests.__setup();
+    addFolder_tests[test].call(obj);
+  }
+  else {
+    addFolder_tests[test].call();
+  }
 }
