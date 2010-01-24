@@ -3,7 +3,7 @@ var assert = require('assert');
 
 var responses = require('../lib/http_responses');
 var BomberResponse = require('../lib/response').Response;
-var MockResponse = require('./mocks').MockResponse;
+var MockResponse = require('./mocks/response').MockResponse;
 
 var default_response_tests = {
   "test a default response": function() {

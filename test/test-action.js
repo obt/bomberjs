@@ -6,8 +6,8 @@ var BomberResponse = require('../lib/response').Response;
 var BomberRequest = require('../lib/request').Request;
 var processAction = require('../lib/action').processAction;
 
-var MockRequest = require('./mocks').MockRequest;
-var MockResponse = require('./mocks').MockResponse;
+var MockRequest = require('./mocks/request').MockRequest;
+var MockResponse = require('./mocks/response').MockResponse;
 
 var tests = {
   "test return string": function() {

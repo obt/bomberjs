@@ -7,8 +7,8 @@ var Router = require('../lib/router').Router;
 var BomberResponse = require('../lib/response').Response;
 var BomberRequest = require('../lib/request').Request;
 
-var MockRequest = require('./mocks').MockRequest;
-var MockResponse = require('./mocks').MockResponse;
+var MockRequest = require('./mocks/request').MockRequest;
+var MockResponse = require('./mocks/response').MockResponse;
 
 
 // Simple routes

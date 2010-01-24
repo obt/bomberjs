@@ -1,3 +1,12 @@
+/* Mock Node http.serverResponse
+ *
+ * Responds to all the methods that http.serverResponse does, and basically just
+ * stores everything it is told.
+ *
+ * The idea being that you can then make assertions about what it has been told
+ * to make sure your code is working properly.
+ */
+
 var MockResponse = function() {
   this.status = null;
   this.headers = null;
@@ -27,15 +36,3 @@ MockResponse.prototype.finish = function() {
 };
 
 exports.MockResponse = MockResponse;
-
-var MockRequest = function(method, url) {
-  this.method = method;
-  this.url = url;
-  this.headers = null;
-  this.body = [];
-  this.finished = false;
-  this.httpVersion = "1.1";
-};
-//TODO add mock listeners for 'body' and 'complete' events
-
-exports.MockRequest = MockRequest;

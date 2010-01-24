@@ -3,7 +3,7 @@ var assert = require('assert');
 var path = require('path');
 
 var BomberResponse = require('../lib/response').Response;
-var MockResponse = require('./mocks').MockResponse;
+var MockResponse = require('./mocks/response').MockResponse;
 
 var tests = {
   "test simple": function() {
