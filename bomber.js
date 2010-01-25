@@ -1,5 +1,35 @@
 #! /usr/bin/env node
 
+/* bomber.js
+ *
+ * bomber.js is a shell script that is used to manage your Bomber projects.
+ *
+ * Syntax:
+ * -------
+ *
+ *     bomber.js <flags> <task>
+ *
+ * Flags:
+ *
+ * + `--app <filename>`, `-a <filename>`: Optional.  the name or the path of a
+ *   Bomber app. This argument is used by the Node require command, so read up
+ *   on how that works to make sure Bomber will be able to find your app. If the
+ *   argument isn’t supplied it uses the current directory.
+ *
+ * Tasks:
+ *
+ * It loads its commands in from `./lib/tasks`.
+ *
+ * + `start_server`: Start a bomber server
+ *
+ * Examples:
+ * ---------
+ *
+ *     ./bomber.js server
+ *
+ *     ./bomber.js --app ./exampleProject server
+ */
+
 var sys = require('sys');
 var path = require('path');
 var posix = require('posix');
@@ -25,7 +55,7 @@ catch(err) {
 // to write their own tasks
 var bomberjs_location = path.normalize(path.join(require_resolve('bomberjs/lib/app'),'../../'));
 var dir = posix.readdir(path.join(bomberjs_location,'lib/tasks')).wait();
-tasks = {};
+var tasks = {};
 dir.forEach(function(file) {
     if( !file.match(/\.js$/) ) {
       return;
