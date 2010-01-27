@@ -42,7 +42,7 @@ var default_response_tests = {
     var br = new BomberResponse(mr);
     
     var r = new responses.HTTP200OK();
-    r.contentType = 'mimetype';
+    r.mimeType = 'mimetype';
 
     r.respond(br);
 

@@ -4,7 +4,7 @@ var TestSuite = require('../dependencies/node-async-testing/async_testing').Test
 var BomberRequest = require('../lib/request').Request;
 var MockRequest = require('./mocks/request').MockRequest;
 
-(new TestSuite('My Second Test Suite'))
+(new TestSuite('Request Tests'))
   .setup(function() {
       this.mr = new MockRequest('POST', '/');
       this.br = new BomberRequest(this.mr, {"href": "/", "pathname": "/"}, {});

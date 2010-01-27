@@ -87,7 +87,7 @@ var tests = {
     var mr = new MockResponse();
     var br = new BomberResponse(mr);
     
-    br.contentType = 'something';
+    br.mimeType = 'something';
     br.send('Hi there');
 
     assert.equal('something', mr.headers['Content-Type']);
@@ -114,7 +114,7 @@ var tests = {
     var mr = new MockResponse();
     var br = new BomberResponse(mr);
     
-    br.contentType = 'text/something else';
+    br.mimeType = 'text/something else';
     br.headers['Content-Type'] = 'something';
     br.send('Hi there');
 
@@ -124,7 +124,7 @@ var tests = {
     var mr = new MockResponse();
     var br = new BomberResponse(mr);
     
-    br.contentType = 'text/html';
+    br.mimeType = 'text/html';
     br.send('Hi there');
 
     assert.equal('text/html; charset=UTF-8', mr.headers['Content-Type']);
@@ -133,7 +133,7 @@ var tests = {
     var mr = new MockResponse();
     var br = new BomberResponse(mr);
     
-    br.contentType = 'unknown';
+    br.mimeType = 'unknown';
     br.send('Hi there');
 
     assert.equal('unknown', mr.headers['Content-Type']);
@@ -142,7 +142,7 @@ var tests = {
     var mr = new MockResponse();
     var br = new BomberResponse(mr);
     
-    br.contentType = 'unknown';
+    br.mimeType = 'unknown';
     br.charset = 'CHARSET';
     br.send('Hi there');
 
@@ -187,7 +187,7 @@ var tests = {
     var mr = new MockResponse();
     var br = new BomberResponse(mr);
     
-    br.contentType = 'not/image';
+    br.mimeType = 'not/image';
     br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
     assert.equal('not/image', mr.headers['Content-Type']);
   },

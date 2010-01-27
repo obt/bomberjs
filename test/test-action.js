@@ -186,8 +186,7 @@ var tests = {
     var action = function(req, res) {
       var r = new res.build.HTTPResponse('response');
       r.status = 101;
-      r.contentType = 'text';
-      r.encoding = 'asci';
+      r.mimeType = 'text';
       return r;
     }
     processAction(request, response, action);

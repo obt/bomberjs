@@ -124,14 +124,14 @@ for(var key in app_keys) {
   assert.deepEqual(app_keys[key], app._parseAppPath(key));
 }
 
-// test that App.modulePathToKey does so properly
-assert.equal(path.basename(process.cwd()), App.modulePathToKey('.'));
-assert.equal('path', App.modulePathToKey('./my/path'));
-assert.equal('path', App.modulePathToKey('/my/path'));
-assert.equal('path', App.modulePathToKey('my/path'));
-assert.equal('path', App.modulePathToKey('./path'));
-assert.equal('path', App.modulePathToKey('/path'));
-assert.equal('path', App.modulePathToKey('path'));
+// test that App.modulePathToAppKey does so properly
+assert.equal(path.basename(process.cwd()), App.modulePathToAppKey('.'));
+assert.equal('path', App.modulePathToAppKey('./my/path'));
+assert.equal('path', App.modulePathToAppKey('/my/path'));
+assert.equal('path', App.modulePathToAppKey('my/path'));
+assert.equal('path', App.modulePathToAppKey('./path'));
+assert.equal('path', App.modulePathToAppKey('/path'));
+assert.equal('path', App.modulePathToAppKey('path'));
 
 function count(object) {
   var count = 0;
