@@ -11,15 +11,31 @@ var MockRequest = exports.MockRequest = function(method, url) {
   this.body = [];
   this.finished = false;
   this.httpVersion = "1.1";
+
+  this._listeners = {};
+};
+
+MockRequest.prototype.addListener = function(event, callback) {
+  if( !(event in this._listeners) ) {
+    this._listeners[event] = [];
+  }
+
+  this._listeners[event].push(callback);
+};
+
+MockRequest.prototype.emit = function() {
+  var args = Array.prototype.slice.call(arguments);
+  var event = args.shift();
+
+  this._listeners[event].forEach(function(cb) {
+      cb.apply(null, args);
+    });
 };
 
 /* Not implemented:
  *
- * + addListener
  * + setBodyEncoding
  * + pause
  * + resume
  * + connection
- *
- * Also needed: a way to send 'body' and 'complete' events
  */
