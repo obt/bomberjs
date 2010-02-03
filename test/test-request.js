@@ -11,7 +11,7 @@ var MockRequest = require('./mocks/request').MockRequest;
     })
   .runTests({
     "test simple": function(test) {
-      test.assert.equal(this.mr.method, this.br.method);
+      this.assert.equal(this.mr.method, this.br.method);
     },
     "test load data": function(test) {
       var sent = 'foo=bar&baz%5Bquux%5D=asdf&baz%5Boof%5D=rab&boo%5B%5D=1';
@@ -26,24 +26,24 @@ var MockRequest = require('./mocks/request').MockRequest;
           ]
         };
 
-      var p = this.br.loadData();
+      var p = test.br.loadData();
       p.addCallback(function(data) {
           test.assert.deepEqual(parsed, data);
         });
 
-      this.mr.emit('body',sent);
-      this.mr.emit('complete');
+      test.mr.emit('body',sent);
+      test.mr.emit('complete');
     },
     "test load data -- no parse": function(test) {
       var sent = 'foo=bar&baz%5Bquux%5D=asdf&baz%5Boof%5D=rab&boo%5B%5D=1';
 
-      var p = this.br.loadData(false);
+      var p = test.br.loadData(false);
       p.addCallback(function(data) {
           test.assert.equal(sent, data);
         });
 
-      this.mr.emit('body',sent);
-      this.mr.emit('complete');
+      test.mr.emit('body',sent);
+      test.mr.emit('complete');
     },
     "test buffers": function(test) {
       var dataLoaded = false;
@@ -51,18 +51,18 @@ var MockRequest = require('./mocks/request').MockRequest;
       var first = 'one',
           second = 'two';
 
-      var p = this.br.loadData(false);
+      var p = test.br.loadData(false);
       p.addCallback(function(data) {
           test.assert.equal(first+second, data);
           dataLoaded = true;
         });
 
       test.assert.ok(!dataLoaded);
-      this.mr.emit('body',first);
+      test.mr.emit('body',first);
       test.assert.ok(!dataLoaded);
-      this.mr.emit('body',second);
+      test.mr.emit('body',second);
       test.assert.ok(!dataLoaded);
-      this.mr.emit('complete');
+      test.mr.emit('complete');
       test.assert.ok(dataLoaded);
     },
   });

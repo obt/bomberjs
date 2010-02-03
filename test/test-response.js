@@ -1,238 +1,170 @@
 var sys = require('sys');
-var assert = require('assert');
+var TestSuite = require('../dependencies/node-async-testing/async_testing').TestSuite;
 var path = require('path');
 
 var BomberResponse = require('../lib/response').Response;
 var MockResponse = require('./mocks/response').MockResponse;
 
-var tests = {
-  "test simple": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
+(new TestSuite('Response Tests'))
+  .setup(function() {
+      this.mr = new MockResponse();
+      this.br = new BomberResponse(this.mr);
+    })
+  .runTests({
+    "test simple": function(test) {
+      test.br.send('Hi there');
 
-    br.send('Hi there');
+      test.assert.equal(200, test.mr.status);
+      test.assert.ok(test.mr.finished);
+      test.assert.equal(1, test.mr.body.length);
+      test.assert.equal('Hi there', test.mr.bodyText);
+    },
+    "test finish on send": function(test) {
+      test.br.finishOnSend = false;
 
-    assert.equal(200, mr.status);
-    assert.ok(mr.finished);
-    assert.equal(1, mr.body.length);
-    assert.equal('Hi there', mr.bodyText);
-  },
-  "test finish on send": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
+      test.br.send('Hi there');
+      test.assert.ok(!test.mr.finished);
 
-    br.finishOnSend = false;
+      test.br.send('Hello');
+      test.assert.ok(!test.mr.finished);
 
-    br.send('Hi there');
-    assert.ok(!mr.finished);
+      test.br.finish();
+      test.assert.ok(test.mr.finished);
+    },
+    "test can't finish twice": function(test) {
+      test.br.send('Hi there');
+      test.assert.throws(function() {
+          test.br.finish();
+        });
+    },
+    "test can't send after finishing": function(test) {
+      test.br.send('Hi there');
+      test.assert.throws(function() {
+          test.br.send('');
+        });
+    },
+    "test can't send header twice": function(test) {
+      test.br.sendHeaders();
+      test.assert.throws(function() {
+          test.br.sendHeaders();
+        });
+    },
+    "test header isn't sent twice if manually sent": function(test) {
+      //headers haven't been sent
+      test.assert.ok(!test.mr.headers);
+      test.br.sendHeaders();
 
-    br.send('Hello');
-    assert.ok(!mr.finished);
+      // now they have
+      test.assert.ok(test.mr.headers);
+      
+      // no problem!
+      test.assert.doesNotThrow(function() {
+          test.br.send('hi there');
+        });
+    },
+    "test Content-Type set automatically": function(test) {
+      test.br.send('Hi there');
 
-    br.finish();
-    assert.ok(mr.finished);
-  },
-  "test can't finish twice": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
+      test.assert.equal('text/html; charset=UTF-8', test.mr.headers['Content-Type']);
+    },
+    "test Content-Type set through variable": function(test) {
+      test.br.mimeType = 'something';
+      test.br.send('Hi there');
 
-    br.send('Hi there');
-    assert.throws(function() {
-        br.finish();
-      });
-  },
-  "test can't send after finishing": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
+      test.assert.equal('something', test.mr.headers['Content-Type']);
+    },
+    "test Content-Type set through setHeader": function(test) {
+      test.br.setHeader('Content-Type', 'something');
+      test.br.send('Hi there');
 
-    br.send('Hi there');
-    assert.throws(function() {
-        br.send('');
-      });
-  },
-  "test can't send header twice": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
+      test.assert.equal('something', test.mr.headers['Content-Type']);
+    },
+    "test Content-Type set through headers": function(test) {
+      test.br.headers['Content-Type'] = 'something';
+      test.br.send('Hi there');
 
-    br.sendHeaders();
-    assert.throws(function() {
-        br.sendHeaders();
-      });
-  },
-  "test header isn't sent twice if manually sent": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
+      test.assert.equal('something', test.mr.headers['Content-Type']);
+    },
+    "test Content-Type gets overriden by explicitly set header": function(test) {
+      test.br.mimeType = 'text/something else';
+      test.br.headers['Content-Type'] = 'something';
+      test.br.send('Hi there');
 
-    //headers haven't been sent
-    assert.ok(!mr.headers);
-    br.sendHeaders();
+      test.assert.equal('something', test.mr.headers['Content-Type']);
+    },
+    "test charset set automatically if known Content-Type": function(test) {
+      test.br.mimeType = 'text/html';
+      test.br.send('Hi there');
 
-    // now they have
-    assert.ok(mr.headers);
-    
-    // no problem!
-    assert.doesNotThrow(function() {
-        br.send('hi there');
-      });
-  },
-  "test Content-Type set automatically": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
-    
-    br.send('Hi there');
+      test.assert.equal('text/html; charset=UTF-8', test.mr.headers['Content-Type']);
+    },
+    "test charset not set automatically if unknown Content-Type": function(test) {
+      test.br.mimeType = 'unknown';
+      test.br.send('Hi there');
 
-    assert.equal('text/html; charset=UTF-8', mr.headers['Content-Type']);
-  },
-  "test Content-Type set through variable": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
-    
-    br.mimeType = 'something';
-    br.send('Hi there');
+      test.assert.equal('unknown', test.mr.headers['Content-Type']);
+    },
+    "test charset can be explicitly set": function(test) {
+      test.br.mimeType = 'unknown';
+      test.br.charset = 'CHARSET';
+      test.br.send('Hi there');
 
-    assert.equal('something', mr.headers['Content-Type']);
-  },
-  "test Content-Type set through setHeader": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
-    
-    br.setHeader('Content-Type', 'something');
-    br.send('Hi there');
+      test.assert.equal('unknown; charset=CHARSET', test.mr.headers['Content-Type']);
+    },
+    "test status can be set": function(test) {
+      test.br.status = 404;
+      test.br.send('Hi there');
 
-    assert.equal('something', mr.headers['Content-Type']);
-  },
-  "test Content-Type set through headers": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
-    
-    br.headers['Content-Type'] = 'something';
-    br.send('Hi there');
+      test.assert.equal(404, test.mr.status);
+    },
+    "test send file": function(test) {
+      test.br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
 
-    assert.equal('something', mr.headers['Content-Type']);
-  },
-  "test Content-Type gets overriden by explicitly set header": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
-    
-    br.mimeType = 'text/something else';
-    br.headers['Content-Type'] = 'something';
-    br.send('Hi there');
+      test.assert.equal(200, test.mr.status);
+      test.assert.equal('this is a fake image\n', test.mr.bodyText);
 
-    assert.equal('something', mr.headers['Content-Type']);
-  },
-  "test charset set automatically if known Content-Type": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
-    
-    br.mimeType = 'text/html';
-    br.send('Hi there');
+      test.assert.ok(test.mr.finished);
+    },
+    "test send file doesn't exist": function(test) {
+      test.assert.throws(function() {
+          test.br.sendFile('non-existant').wait();
+        });
+    },
+    "test send file will set Content-Type": function(test) {
+      test.br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
+      test.assert.equal('image/png', test.mr.headers['Content-Type']);
+    },
+    "test send file will not override Content-Type": function(test) {
+      test.br.mimeType = 'not/image';
+      test.br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
+      test.assert.equal('not/image', test.mr.headers['Content-Type']);
+    },
+    "test send file with finishOnSend false": function(test) {
+      test.br.finishOnSend = false;
+      
+      test.br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
 
-    assert.equal('text/html; charset=UTF-8', mr.headers['Content-Type']);
-  },
-  "test charset not set automatically if unknown Content-Type": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
-    
-    br.mimeType = 'unknown';
-    br.send('Hi there');
+      test.assert.ok(!test.mr.finished);
+    },
+    "test send file with other sends": function(test) {
+      test.br.finishOnSend = false;
+      
+      test.br.send('one');
+      test.br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
+      test.br.send('two');
 
-    assert.equal('unknown', mr.headers['Content-Type']);
-  },
-  "test charset can be explicitly set": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
-    
-    br.mimeType = 'unknown';
-    br.charset = 'CHARSET';
-    br.send('Hi there');
-
-    assert.equal('unknown; charset=CHARSET', mr.headers['Content-Type']);
-  },
-  "test status can be set": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
-    
-    br.status = 404;
-    br.send('Hi there');
-
-    assert.equal(404, mr.status);
-  },
-  "test send file": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
-    
-    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
-
-    assert.equal(200, mr.status);
-    assert.equal('this is a fake image\n', mr.bodyText);
-
-    assert.ok(mr.finished);
-  },
-  "test send file doesn't exist": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
-    
-    assert.throws(function() {
-        br.sendFile('non-existant').wait();
-      });
-  },
-  "test send file will set Content-Type": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
-    
-    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
-    assert.equal('image/png', mr.headers['Content-Type']);
-  },
-  "test send file will not override Content-Type": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
-    
-    br.mimeType = 'not/image';
-    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
-    assert.equal('not/image', mr.headers['Content-Type']);
-  },
-  "test send file with finishOnSend false": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
-
-    br.finishOnSend = false;
-    
-    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
-
-    assert.ok(!mr.finished);
-  },
-  "test send file with other sends": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
-
-    br.finishOnSend = false;
-    
-    br.send('one');
-    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
-    br.send('two');
-
-    assert.equal('onethis is a fake image\ntwo', mr.bodyText);
-  },
-  "test send file doesn't resend headers": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
-
-    br.sendHeaders();
-    assert.ok(mr.headers);
-    mr.headers = null;
-    assert.ok(!mr.headers);
-    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
-    assert.ok(!mr.headers);
-  },
-  "test send file resets encoding after it is finished": function() {
-    var mr = new MockResponse();
-    var br = new BomberResponse(mr);
-
-    br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
-    assert.equal(BomberResponse.__defaultEncoding, br.encoding);
-  },
-};
-
-for( var test in tests) {
-  tests[test]();
-}
+      test.assert.equal('onethis is a fake image\ntwo', test.mr.bodyText);
+    },
+    "test send file doesn't resend headers": function(test) {
+      test.br.sendHeaders();
+      test.assert.ok(test.mr.headers);
+      test.mr.headers = null;
+      test.assert.ok(!test.mr.headers);
+      test.br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
+      test.assert.ok(!test.mr.headers);
+    },
+    "test send file resets encoding after it is finished": function(test) {
+      test.br.sendFile(path.dirname(__filename)+'/fixtures/testApp/resources/image.png').wait();
+      test.assert.equal(BomberResponse.__defaultEncoding, test.br.encoding);
+    },
+  });

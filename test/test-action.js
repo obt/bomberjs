@@ -1,5 +1,5 @@
 var sys = require('sys');
-var assert = require('assert');
+var TestSuite = require('../dependencies/node-async-testing/async_testing').TestSuite;
 var Promise = require('../lib/promise').Promise;
 
 var BomberResponse = require('../lib/response').Response;
@@ -9,8 +9,8 @@ var processAction = require('../lib/action').processAction;
 var MockRequest = require('./mocks/request').MockRequest;
 var MockResponse = require('./mocks/response').MockResponse;
 
-var tests = {
-  "test return string": function() {
+(new TestSuite('Action Tests')).runTests({
+  "test return string": function(test) {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
     var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
@@ -21,11 +21,11 @@ var tests = {
     }
     processAction(request, response, action);
 
-    assert.equal(200, mresponse.status);
-    assert.equal('text/html; charset=UTF-8', mresponse.headers['Content-Type']);
-    assert.equal('hi', mresponse.bodyText);
+    test.assert.equal(200, mresponse.status);
+    test.assert.equal('text/html; charset=UTF-8', mresponse.headers['Content-Type']);
+    test.assert.equal('hi', mresponse.bodyText);
   },
-  "test return object": function() {
+  "test return object": function(test) {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
     var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
@@ -37,11 +37,11 @@ var tests = {
     }
     processAction(request, response, action);
 
-    assert.equal(200, mresponse.status);
-    assert.equal('application/json', mresponse.headers['Content-Type']);
-    assert.deepEqual(obj, JSON.parse(mresponse.bodyText));
+    test.assert.equal(200, mresponse.status);
+    test.assert.equal('application/json', mresponse.headers['Content-Type']);
+    test.assert.deepEqual(obj, JSON.parse(mresponse.bodyText));
   },
-  "test return http response": function() {
+  "test return http response": function(test) {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
     var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
@@ -52,10 +52,10 @@ var tests = {
     }
     processAction(request, response, action);
 
-    assert.equal(301, mresponse.status);
-    assert.equal('', mresponse.bodyText);
+    test.assert.equal(301, mresponse.status);
+    test.assert.equal('', mresponse.bodyText);
   },
-  "test return promise": function() {
+  "test return promise": function(test) {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
     var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
@@ -69,10 +69,10 @@ var tests = {
 
     promise.callback('hey');
 
-    assert.equal(200, mresponse.status);
-    assert.equal('hey', mresponse.bodyText);
+    test.assert.equal(200, mresponse.status);
+    test.assert.equal('hey', mresponse.bodyText);
   },
-  "test throw http response": function() {
+  "test throw http response": function(test) {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
     var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
@@ -83,11 +83,11 @@ var tests = {
     }
     processAction(request, response, action);
 
-    assert.equal(301, mresponse.status);
-    assert.equal('http://google.com', mresponse.headers['Location']);
-    assert.equal('', mresponse.bodyText);
+    test.assert.equal(301, mresponse.status);
+    test.assert.equal('http://google.com', mresponse.headers['Location']);
+    test.assert.equal('', mresponse.bodyText);
   },
-  "test return promise return response": function() {
+  "test return promise return response": function(test) {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
     var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
@@ -104,11 +104,11 @@ var tests = {
 
     promise.callback('hey');
 
-    assert.equal(303, mresponse.status);
-    assert.equal('http://google.com', mresponse.headers['Location']);
-    assert.equal('', mresponse.bodyText);
+    test.assert.equal(303, mresponse.status);
+    test.assert.equal('http://google.com', mresponse.headers['Location']);
+    test.assert.equal('', mresponse.bodyText);
   },
-  "test return promise throw response": function() {
+  "test return promise throw response": function(test) {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
     var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
@@ -137,15 +137,15 @@ var tests = {
 
     promise.callback('hey');
 
-    assert.ok(gotHere1);
-    assert.ok(gotHere2);
-    assert.ok(didntGetHere);
+    test.assert.ok(gotHere1);
+    test.assert.ok(gotHere2);
+    test.assert.ok(didntGetHere);
 
-    assert.equal(301, mresponse.status);
-    assert.equal('http://www.google.com', mresponse.headers['Location']);
-    assert.equal('', mresponse.bodyText);
+    test.assert.equal(301, mresponse.status);
+    test.assert.equal('http://www.google.com', mresponse.headers['Location']);
+    test.assert.equal('', mresponse.bodyText);
   },
-  "test throw error": function() {
+  "test throw error": function(test) {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
     var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
@@ -156,9 +156,9 @@ var tests = {
     }
     processAction(request, response, action);
 
-    assert.equal(500, mresponse.status);
+    test.assert.equal(500, mresponse.status);
   },
-  "test throw error from promise": function() {
+  "test throw error from promise": function(test) {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
     var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
@@ -175,9 +175,9 @@ var tests = {
 
     promise.callback('hey');
 
-    assert.equal(500, mresponse.status);
+    test.assert.equal(500, mresponse.status);
   },
-  "test httpresponse": function() {
+  "test httpresponse": function(test) {
     var mrequest = new MockRequest('GET', '/');
     var mresponse = new MockResponse();
     var request = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
@@ -191,12 +191,8 @@ var tests = {
     }
     processAction(request, response, action);
 
-    assert.equal(101, mresponse.status);
-    assert.equal('text', mresponse.headers['Content-Type']);
-    assert.equal('response', mresponse.bodyText);
+    test.assert.equal(101, mresponse.status);
+    test.assert.equal('text', mresponse.headers['Content-Type']);
+    test.assert.equal('response', mresponse.bodyText);
   },
-};
-
-for( var test in tests) {
-  tests[test]();
-}
+});
