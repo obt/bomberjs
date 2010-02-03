@@ -30,7 +30,7 @@ var app_errors = require('bomberjs/lib/app').errors;
       test.assert.equal(1, count(test.app.apps));
 
       // first sub app has no config
-      test.assert.equal(null, test.app.apps.subApp1.config);
+      test.assert.deepEqual({}, test.app.apps.subApp1.config);
     },
     "test can load non-existant view": function(test) {
       // can't get a view that doesn't exist
