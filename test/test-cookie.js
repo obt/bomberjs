@@ -18,7 +18,7 @@ var Cookie = require('../lib/cookie').Cookie;
     this.mresponse = new MockResponse();
     this.bresponse = new BomberResponse(this.mresponse);
 
-    this.cookie = new Cookie(brequest, this.bresponse, {options: { signing_secret: 'secret' }});
+    this.cookie = new Cookie(brequest, this.bresponse, {options: {signing_secret: 'secret'}});
   })
   .runTests({
     "test read": function() {
@@ -26,9 +26,9 @@ var Cookie = require('../lib/cookie').Cookie;
       this.assert.equal(2, this.cookie.get('two'));
       this.assert.equal(3, this.cookie.get('three'));
     },
-    "test fallback": function() {
+    "test read with fallback": function() {
       this.assert.equal('default', this.cookie.get('unset1', 'default'));
-      this.assert.equal('', this.cookie.get('unset2'));
+      this.assert.equal(null, this.cookie.get('unset2'));
     },
     "test set and read": function() {
       this.cookie.set('one', 'I');
@@ -60,14 +60,22 @@ var Cookie = require('../lib/cookie').Cookie;
       this.assert.equal("I'm secure", this.cookie.getSecure('secure_one'));
       this.assert.equal("I'm also secure", this.cookie.getSecure('secure_two'));
     },
+    "test secure read with fallback": function() {
+      // no fallback
+      this.assert.equal(null, this.cookie.getSecure('unset2'));
+      // fallback
+      this.assert.equal('default', this.cookie.getSecure('unset1', 'default'));
+
+      // fallback is given because cookie has been tampered with and is as good
+      // as non-existent
+      this.cookie._secret = 'mangled';
+      this.assert.equal('default', this.cookie.getSecure('secure_one', 'default'));
+    },
     "test secure with mangled secret": function() {
       this.cookie.setSecure('secure_one', 'I');
       this.assert.equal('I', this.cookie.getSecure('secure_one'));
       // Mangle secret
-      var _s = this.cookie._secret;
       this.cookie._secret = 'mangled';
       this.assert.equal(null, this.cookie.getSecure('secure_one'));
-      // And restore
-      this.cookie._secret = _s;
     },
   });
