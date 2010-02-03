@@ -53,7 +53,7 @@ catch(err) {
 // base tasks that every app has.  like start_server (and
 // run_tests eventually).  Down the line I'd like apps to be able
 // to write their own tasks
-var bomberjs_location = path.normalize(path.join(require_resolve('bomberjs/lib/app'),'../../'));
+var bomberjs_location = path.normalize(path.join(require('bomberjs/lib/utils').require_resolve('bomberjs/lib/app'),'../../'));
 var dir = posix.readdir(path.join(bomberjs_location,'lib/tasks')).wait();
 var tasks = {};
 dir.forEach(function(file) {
@@ -114,30 +114,4 @@ else {
   else {
     require(tasks[argv[0]]).task(app);
   }
-}
-
-// I'm going to submit a variation of this function as a patch to Node,
-// but the require code is in a bit of a state of flux right now.
-function require_resolve(module_name) {
-  suffixes = ['.js','.node','/index.js', 'index.node'];
-  for( var i=0; i < require.paths.length; i++ ) {
-    var p = require.paths[i];
-    
-    var stat = null;
-    for( var j=0; j < suffixes.length; j++ ) {
-      try {
-        stat = posix.stat(path.join(p,module_name+suffixes[j])).wait();
-        break;
-      }
-      catch(err) {
-        if( err.message != "No such file or directory" ) {
-          throw err;
-        }
-      }
-    };
-
-    if( stat !== null ) {
-      return path.join(p,module_name);
-    }
-  };
 }
