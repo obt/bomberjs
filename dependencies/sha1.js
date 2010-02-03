@@ -33,12 +33,12 @@ function any_hmac_sha1(k, d, e)
 
 
 // Expose functions to the module (* the only change made to original code *)
-this.hex_sha1=hex_sha1;
-this.b64_sha1=b64_sha1;
-this.any_sha1=any_sha1;
-this.hex_hmac_sha1=hex_hmac_sha1;
-this.b64_hmac_sha1=b64_hmac_sha1;
-this.any_hmac_sha1=any_hmac_sha1;
+exports.hex_sha1=hex_sha1;
+exports.b64_sha1=b64_sha1;
+exports.any_sha1=any_sha1;
+exports.hex_hmac_sha1=hex_hmac_sha1;
+exports.b64_hmac_sha1=b64_hmac_sha1;
+exports.any_hmac_sha1=any_hmac_sha1;
 
 /*
  * Perform a simple self-test to see if the VM is working
