@@ -1,17 +1,26 @@
-var sys = require('sys');
-var TestSuite = require('../dependencies/node-async-testing/async_testing').TestSuite;
+var sys = require('sys'),
+    path = require('path');
 
-var BomberRequest = require('../lib/request').Request;
-var MockRequest = require('./mocks/request').MockRequest;
-var BomberResponse = require('../lib/response').Response;
-var MockResponse = require('./mocks/response').MockResponse;
-var Cookie = require('../lib/cookie').Cookie;
+var TestSuite = require('../dependencies/node-async-testing/async_testing').TestSuite;
+var httpclient = require('../dependencies/node-httpclient/lib/httpclient');
+
+var BomberRequest = require('../lib/request').Request,
+    BomberResponse = require('../lib/response').Response,
+    MockRequest = require('./mocks/request').MockRequest,
+    MockResponse = require('./mocks/response').MockResponse,
+    Cookie = require('../lib/cookie').Cookie;
+
+// the testing apps assume that bomberjs is on the path.
+require.paths.push(path.dirname(__filename)+'/../..');
+var BomberServer = require('bomberjs/lib/server').Server;
+var App = require('bomberjs/lib/app').App;
+
 
 (new TestSuite('Cookie Tests'))
   .setup(function() {
     var mrequest = new MockRequest('POST', '/');
     mrequest.headers = {
-      Cookie: 'one=1;two=2;three=3'
+      cookie: 'one=1;two=2;three=3'
     };
     var brequest = new BomberRequest(mrequest, {"href": "/", "pathname": "/"}, {});
 
@@ -77,5 +86,45 @@ var Cookie = require('../lib/cookie').Cookie;
       // Mangle secret
       this.cookie._secret = 'mangled';
       this.assert.equal(null, this.cookie.getSecure('secure_one'));
+    },
+  });
+
+(new TestSuite('Cookie Tests -- over HTTP'))
+  .setup(function() {
+    var app = new App('bomberjs/test/fixtures/testApp');
+    this.server = new BomberServer(app);
+    this.server.start();
+
+    this.url_base = 'http://localhost:'+this.server.options.port+'/';
+
+    this.client = new httpclient.httpclient();
+  })
+  .teardown(function() {
+    this.server.stop();
+  })
+  .waitForTests()
+  .runTests({
+    "test set cookie": function(test) {
+      // the action at this url sets a cookie...
+      test.client.perform(test.url_base+'index', "GET", function(result) {
+          test.assert.equal('value', test.client.getCookie('localhost','name'));
+          test.finish();
+        }, null);
+    },
+    "test read cookie": function(test) {
+      test.client.perform(test.url_base+'show', "GET", function(result) {
+          // no cookie has been set yet
+          test.assert.equal('show action', result.response.body);
+          test.assert.equal(null, test.client.getCookie('localhost','name'));
+
+          //set the cookie
+          test.client.perform(test.url_base+'index', "GET", function(result) {
+              test.client.perform(test.url_base+'show', "GET", function(result) {
+                  // the action read the cookie
+                  test.assert.equal('show action with cookie name=value', result.response.body);
+                  test.finish();
+                }, null);
+            }, null);
+        }, null);
     },
   });

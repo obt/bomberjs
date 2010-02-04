@@ -55,7 +55,7 @@ var app_errors = require('bomberjs/lib/app').errors;
     },
     "test load routes": function(test) {
       // test that we properly load in the routes
-      test.assert.equal(2, test.app.router._routes.length);
+      test.assert.equal(3, test.app.router._routes.length);
       test.assert.equal(2, test.app.apps.subApp1.router._routes.length);
     },
     "test getRoute will pass routing along": function(test) {
