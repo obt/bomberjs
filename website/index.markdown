@@ -22,7 +22,7 @@ The easiest way to try it out is to `cd` into the example project and run the fo
 
 {% highlight sh %}
 cd bomberjs/exampleProject
-./bomber.js server
+./bomber.js start-server
 {% endhighlight %}
 
 

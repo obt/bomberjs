@@ -20,14 +20,16 @@
  *
  * It loads its commands in from `./lib/tasks`.
  *
- * + `start_server`: Start a bomber server
+ * + `start-server`: Start a bomber server
+ * + `run-tests`: Run all javascript files in the `test` folder that start with 
+ *   `test-`
  *
  * Examples:
  * ---------
  *
- *     ./bomber.js server
+ *     ./bomber.js start-server
  *
- *     ./bomber.js --app ./exampleProject server
+ *     ./bomber.js --app ./exampleProject start-server
  */
 
 var sys = require('sys');
