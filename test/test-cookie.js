@@ -27,7 +27,7 @@ var App = require('bomberjs/lib/app').App;
     this.mresponse = new MockResponse();
     this.bresponse = new BomberResponse(this.mresponse);
 
-    this.cookie = new Cookie(brequest, this.bresponse, {options: {signing_secret: 'secret'}});
+    this.cookie = new Cookie(brequest, this.bresponse, {options: {security: {signing_secret: 'secret'}}});
   })
   .runTests({
     "test read": function() {
@@ -95,7 +95,7 @@ var App = require('bomberjs/lib/app').App;
     this.server = new BomberServer(app);
     this.server.start();
 
-    this.url_base = 'http://localhost:'+this.server.options.port+'/';
+    this.url_base = 'http://localhost:'+this.server.options.server.port+'/';
 
     this.client = new httpclient.httpclient();
   })
