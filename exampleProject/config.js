@@ -13,24 +13,22 @@ exports.security = {
   signing_secret: ""
 }
 
-
-/* PERSISTENT STORAGE */
-exports.persistent_storage = {
-  // Configuration for persistent storage for session and users
-  // Options are 'disk' and 'couchdb'
-  // Default: 'disk'
-  method: 'disk',
-
-  // Options for the persistent storage method
-  // Default: {location:'/tmp/'}
-  options: {
-    location: './storage/'
-   }
-}
-
-
 // SESSIONS
 exports.session = {
+  // How do you want to store the content of sessions
+  // Options are:
+  // 'disk' [default]: Manage content on disk. You can control the location of 
+  //   the on-disk storage in the disk_storage_location parameter.
+  // 'cookies': Store in signed cookies. Cookies are a quick and fairly secure
+  //   way to store simple session values, but complex data probably shouldn't be
+  //   handled with cookies. Also, stuff written to the session after the request
+  //   headers have been sent won't be saved.
+  storage_method: 'disk',
+
+  // Directory for on-disk storage of sessions
+  // Default: '/tmp/'
+  disk_storage_location: './storage/',
+
   // Minutes before sessions expire
   // Default: 600 (10 hours)
   expire_minutes: 600,
