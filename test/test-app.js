@@ -21,16 +21,97 @@ var app_errors = require('bomberjs/lib/app').errors;
           var app = new App('bomberjs/test/fixtures/nonExistantApp');
         });
     },
+    "test _inheritAndFlattenConfig": function() {
+      var self = {
+        'server': { option: false },
+        'testApp': { one_a: 1, one_b: 1, one_c: 1, one_d: 1 },
+        './subApp1': { option: false },
+        './anotherApp': { option: true },
+        '.': { one_b: 2, two_a: 2, two_b: 2, two_c: 2 },
+      };
+
+      var parent = {
+        'server': { option: true },
+        'testApp': { one_c: 3, two_b: 3, three_a: 3, three_b: 3 },
+        './subApp1': { option: true },
+        '.': { one_d: 4, two_c: 4, three_b: 4, four_a: 4 },
+      };
+
+      var parent_copy = process.mixin(true, {}, parent);
+      // this properly copies right?
+      this.assert.notEqual(parent_copy, parent);
+
+      var received = this.app._inheritAndFlattenConfig(self, parent);
+
+      // make sure they get combined properly
+      var expected = {
+        'server': { option: true },
+        './subApp1': { option: true },
+        './anotherApp': { option: true },
+        '.': { one_a: 1, one_b: 2, one_c: 3, one_d: 4, two_a: 2, two_b: 3, two_c: 4, three_a: 3, three_b: 4, four_a: 4 }
+      };
+      this.assert.deepEqual(expected, received);
+
+      // make sure that we didn't change the parent
+      this.assert.deepEqual(parent_copy, parent);
+
+      // make sure that changing the the combined doesn't change 
+      // the parent
+      received.server.one = 3;
+      this.assert.deepEqual(parent_copy, parent);
+    },
+    "test _configForApp": function() {
+      var start = {
+        "server": { option: true },
+        "one": { option: true },
+        "two": { option: true },
+        "./two": { option: true },
+        "./two/three": { option: true },
+        "./four": { option: true },
+      };
+
+      var expected_app_one = {
+        "server": { option: true },
+        "one": { option: true },
+        "two": { option: true }
+      };
+      this.assert.deepEqual(expected_app_one, this.app._configForApp(start, 'one'));
+
+      var expected_app_two = {
+        "server": { option: true },
+        "one": { option: true },
+        "two": { option: true },
+        ".": { option: true },
+        "./three": { option: true }
+      };
+      this.assert.deepEqual(expected_app_two, this.app._configForApp(start, 'two'));
+
+      var expected_app_three_from_app_two = {
+        "server": { option: 1 },
+        "one": { option: 1 },
+        "two": { option: 1 },
+         ".": { option: 1 }
+      };
+      this.assert.deepEqual(expected_app_three_from_app_two, this.app._configForApp(expected_app_two, 'three'));
+
+      var expected_app_four = {
+        "server": { option: 1 },
+        "one": { option: 1 },
+        "two": { option: 1 },
+        ".": { option: 1 }
+      };
+      this.assert.deepEqual(expected_app_four, this.app._configForApp(start, 'four'));
+    },
     "test load config": function(test) {
       test.assert.equal(1, test.app.config.option_one);
       test.assert.equal(2, test.app.config.option_two);
     },
-    "test loads subapps": function(test) {
+    "test load subapps": function(test) {
       //base test app has 1 sub app
       test.assert.equal(1, count(test.app.apps));
 
-      // first sub app has no config
-      test.assert.deepEqual({}, test.app.apps.subApp1.config);
+      // first sub app has config passed to it from testApp
+      test.assert.deepEqual({option: true}, test.app.apps.subApp1.config);
     },
     "test can load non-existant view": function(test) {
       // can't get a view that doesn't exist
