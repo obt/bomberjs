@@ -114,6 +114,7 @@ else {
     sys.puts("Unknown task: "+argv[0]);
   }
   else {
-    require(tasks[argv[0]]).task(app);
+    var task = argv.shift();
+    require(tasks[task]).task(app, argv);
   }
 }
