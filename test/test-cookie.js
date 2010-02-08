@@ -50,18 +50,13 @@ var App = require('bomberjs/lib/app').App;
     },
     "test header is set simple": function() {
       this.cookie.set('one', 'I');
-      this.assert.equal('one=I;', this.bresponse.headers['Set-Cookie']);
+      this.assert.ok(this.bresponse.headers['Set-Cookie']);
     },
     "test header is set complicated": function() {
       var d = new Date();
       d.setTime(1);
       this.cookie.set('one', 'I', {expires: d, path: '/path', domain: 'example.com', secure: true});
       this.assert.equal('one=I; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/path; domain=example.com; secure', this.bresponse.headers['Set-Cookie']);
-    },
-    "test header with multiple cookies": function() {
-      this.cookie.set('one', 'I');
-      this.cookie.set('two', 'II');
-      this.assert.equal('one=I;, two=II;', this.bresponse.headers['Set-Cookie']);
     },
     "test secure set and read": function() {
       this.cookie.setSecure('secure_one', "I'm secure");
@@ -95,7 +90,7 @@ var App = require('bomberjs/lib/app').App;
     this.server = new BomberServer(app);
     this.server.start();
 
-    this.url_base = 'http://localhost:'+this.server.options.server.port+'/';
+    this.url_base = 'http://localhost:'+this.server.options.port+'/';
 
     this.client = new httpclient.httpclient();
   })
@@ -107,7 +102,8 @@ var App = require('bomberjs/lib/app').App;
     "test set cookie": function(test) {
       // the action at this url sets a cookie...
       test.client.perform(test.url_base+'index', "GET", function(result) {
-          test.assert.equal('value', test.client.getCookie('localhost','name'));
+          test.assert.equal('value1', test.client.getCookie('localhost','name1'));
+          test.assert.equal('value2', test.client.getCookie('localhost','name2'));
           test.finish();
         }, null);
     },
@@ -121,7 +117,7 @@ var App = require('bomberjs/lib/app').App;
           test.client.perform(test.url_base+'index', "GET", function(result) {
               test.client.perform(test.url_base+'show', "GET", function(result) {
                   // the action read the cookie
-                  test.assert.equal('show action with cookie name=value', result.response.body);
+                  test.assert.equal('show action with cookie name=value1', result.response.body);
                   test.finish();
                 }, null);
             }, null);

@@ -2,7 +2,10 @@
 exports.config = {
   'server': {
     port: 8342,
-    signing_secret: 'secret'
+
+    security: {
+      signing_secret: 'secret'
+    }
   },
 
   '.': {
