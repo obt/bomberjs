@@ -48,6 +48,9 @@ var App = require('bomberjs/lib/app').App;
       this.cookie.unset('one');
       this.assert.equal('none', this.cookie.get('one', 'none'));
     },
+    "test keys": function() {
+      this.assert.deepEqual(['one','two','three'], this.cookie.keys());
+    },
     "test header is set simple": function() {
       this.cookie.set('one', 'I');
       this.assert.ok(this.bresponse.headers['Set-Cookie']);
