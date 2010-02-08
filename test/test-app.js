@@ -113,6 +113,9 @@ var app_errors = require('bomberjs/lib/app').errors;
       // first sub app has config passed to it from testApp
       test.assert.deepEqual({option: true}, test.app.apps.subApp1.config);
     },
+    "test subapp's parent is set": function(test) {
+      test.assert.equal(test.app, test.app.apps.subApp1.parent);
+    },
     "test can load non-existant view": function(test) {
       // can't get a view that doesn't exist
       test.assert.throws(function() {
