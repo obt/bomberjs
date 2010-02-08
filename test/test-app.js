@@ -239,3 +239,4 @@ function count(object) {
   }
   return count;
 }
+
