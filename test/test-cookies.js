@@ -11,11 +11,12 @@ var App = require('bomberjs/lib/app').App;
 
 (new TestSuite('Cookie Tests -- over HTTP'))
   .setup(function() {
-    var app = new App('bomberjs/test/fixtures/testApp');
-    this.server = new BomberServer(app);
+    this.project = {config:{}};
+    this.project.base_app = new App('bomberjs/test/fixtures/testApp', this.project);
+    this.server = new BomberServer(this.project);
     this.server.start();
 
-    this.url_base = 'http://localhost:'+this.server.options.port+'/cookie-tests/';
+    this.url_base = 'http://localhost:'+this.project.config.server.port+'/cookie-tests/';
 
     this.client = new httpclient.httpclient();
   })
@@ -89,7 +90,7 @@ var App = require('bomberjs/lib/app').App;
     },
     "test read secure cookie with mangled secret": function(test) {
       test.client.perform(test.url_base+'setSecure?name=value', "GET", function(result) {
-          test.server.options.security.signing_secret = 'mangled';
+          test.project.config.security.signing_secret = 'mangled';
           test.client.perform(test.url_base+'readSecure?name', "GET", function(result) {
               test.assert.equal('', result.response.body);
               test.finish();

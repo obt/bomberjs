@@ -95,7 +95,12 @@ while( argv.length > 0 ) {
   argv.splice(0,1);
 }
 
-var app = new App(opts.app);
+// the global scope that all apps (and objects, I guess) will have access too.
+var project = {config: {}};
+
+// create the base app for the project
+project.base_app = new App(opts.app, project);
+
 //TODO: allow apps to be able to supply their own tasks and load them
 // here
 
@@ -115,6 +120,6 @@ else {
   }
   else {
     var task = argv.shift();
-    require(tasks[task]).task(app, argv);
+    require(tasks[task]).task(project, argv);
   }
 }
