@@ -1,16 +1,9 @@
 /* PROJECT CONFIGURATION */
 
-exports.config = {
+exports.project_config = {
   server: {
     // Port to run node server on (default 8400)
     //port: 8000,
-
-    security: {
-      // A secret key to sign sessions, cookies, passwords etc. 
-      // Make sure you set this, and that you keep this secret -- well, secret
-      signing_secret: "secret"
-    },
-
     sessions: {
       // How do you want to store the content of sessions
       // Options are:
@@ -52,6 +45,13 @@ exports.config = {
         secure: false
       }
     }
-  }
+  },
+
+  security: {
+    // A secret key to sign sessions, cookies, passwords etc. 
+    // Make sure you set this, and that you keep this secret -- well, secret
+    signing_secret: "secret"
+  },
+
 };
 

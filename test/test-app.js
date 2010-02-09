@@ -9,8 +9,9 @@ var App = require('bomberjs/lib/app').App;
 var app_errors = require('bomberjs/lib/app').errors;
 
 (new TestSuite('App Tests'))
-  .setup(function(test) {
-      test.app = new App('bomberjs/test/fixtures/testApp');
+  .setup(function() {
+      this.project = {config: {}};
+      this.project.base_app = this.app = new App('bomberjs/test/fixtures/testApp', this.project);
     })
   .runTests({
     "test app doesn't have to exist": function(test) {
