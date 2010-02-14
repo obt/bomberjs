@@ -102,4 +102,33 @@ var makeChainable = require('../lib/chainable').makeChainable;
 
       test.obj.emit('event', finished, step, 0);
     },
+    "test step function can cancel chain": function(test) {
+      test.numAssertionsExpected = 2;
+
+      var finished = function() {
+        // should not be called
+        test.assert.ok(false);
+      };
+
+      var count = 0;
+
+      var step = function(val) {
+        count++;
+        // should be called once
+        test.assert.equal(1, count);
+        return true;
+      };
+
+      test.obj.listen('event', function(val) {
+          test.assert.ok(true);
+          return val;
+        });
+      test.obj.listen('event', function(val) {
+          // should not be called
+          test.assert.ok(false);
+          return val;
+        });
+
+      test.obj.emit('event', finished, step, 0);
+    },
   });
