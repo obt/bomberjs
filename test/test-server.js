@@ -17,7 +17,7 @@ var App = require('bomberjs/lib/app').App;
     this.project.base_app = new App('bomberjs/test/fixtures/testApp', this.project);
     this.server = new BomberServer(this.project);
 
-    this.url_base = 'http://192.168.56.101:'+this.project.config.server.port+'/server-tests/';
+    this.url_base = 'http://localhost:'+this.project.config.server.port+'/server-tests/';
 
     this.client = new httpclient.httpclient();
   })
