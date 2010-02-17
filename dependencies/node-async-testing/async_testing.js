@@ -3,7 +3,7 @@ var sys = require('sys'),
     events = require('events');
 
 var AssertWrapper = exports.AssertWrapper = function(test) {
-  this.__test = test;
+  var test = this.__test = test;
   var assertion_functions = [
     'ok',
     'equal',
@@ -20,11 +20,11 @@ var AssertWrapper = exports.AssertWrapper = function(test) {
     this[func_name] = function() {
         try {
           assert[func_name].apply(null, arguments);
-          this.__test.__numAssertions++;
+          test.__numAssertions++;
         }
         catch(err) {
           if( err instanceof assert.AssertionError ) {
-            this.__test.failed(err);
+            test.failed(err);
           }
         }
       }
@@ -32,6 +32,8 @@ var AssertWrapper = exports.AssertWrapper = function(test) {
 };
 
 var Test = function(name, func, suite) {
+  events.EventEmitter.call(this);
+
   this.assert = new AssertWrapper(this);
   this.numAssertionsExpected = null;
 
@@ -44,9 +46,26 @@ var Test = function(name, func, suite) {
   this.__failure = null;
   this.__symbol = '.';
 };
+sys.inherits(Test, events.EventEmitter);
 Test.prototype.run = function() {
-  sys.puts('Starting test "' + this.__name + '"');
-  this.__func(this);
+  var self = this;
+
+  try {
+    this.__func(this.assert, function() { self.finish() }, this);
+  }
+  catch(err) {
+    if( this.listeners('uncaughtException').length > 0 ) {
+      this.emit('uncaughtException',err);
+    }
+    else {
+      this.failed(err);
+    }
+  }
+
+  // they didn't ask for the finish function so assume it is synchronous
+  if( this.__func.length < 2 ) {
+    this.finish();
+  }
 };
 Test.prototype.finish = function() {
   if( !this.__finished ) {
@@ -67,68 +86,64 @@ Test.prototype.finish = function() {
     this.__promise.emitSuccess(this.__numAssertions);
   }
 };
+Test.prototype.failureString = function() {
+  var output = '';
+
+  if( this.__symbol == 'F' ) {
+    output += '  test "' + this.__name + '" failed: \n';
+  }
+  else {
+    output += '  test "' + this.__name + '" threw an error: \n';
+  }
+
+  if( this.__failure.stack ) {
+    this.__failure.stack.split("\n").forEach(function(line) {
+        output += '  ' + line + '\n';
+      });
+    
+  }
+  else {
+    output += '  '+this.__failure;
+  }
+
+  return output;
+};
 Test.prototype.failed = function(err) {
   if( !this.__finished ) {
     this.__failure = err;
-    this.__symbol = 'F';
+    if( err instanceof assert.AssertionError ) {
+      this.__symbol = 'F';
+    }
+    else {
+      this.__symbol = 'E';
+    }
     this.finish();
   }
 };
 
-var tests = [];
-process.addListener('exit', function() {
-    if( tests.length < 1 ) {
-      return;
-    }
-
-    var failures = [];
-    sys.error('\nResults:');
-
-    var output = '';
-    tests.forEach(function(t) {
-        if( !t.__finished ) {
-          t.finish();
-        }
-        if( t.__failure !== null ) {
-          failures.push(t);
-        }
-
-        output += t.__symbol;
-      });
-
-    sys.error(output);
-    failures.forEach(function(t) {
-        sys.error('');
-
-        sys.error('test "' + t.__name + '" failed: ');
-        sys.error(t.__failure.stack || t.__failure);
-      });
-
-    sys.error('');
-  });
-
-var test = exports.test = function(name, func) {
-  var t = new Test(name, func);
-  tests.push(t);
-
-  t.run();
-};
-
 var TestSuite = exports.TestSuite = function(name) {
   this.name = name;
-  this.wait = false;
+  this.wait = true;
   this.tests = [];
   this.numAssertions = 0;
   this.numFinishedTests = 0;
+  this.numFailedTests = 0;
   this.finished = false;
+  this.promise = new events.Promise();
 
   this._setup = null;
   this._teardown = null;
 
   var suite = this;
   process.addListener('exit', function() {
-      suite.finish();
+      if( !suite.wait ) {
+        suite.finish();
+      }
     });
+
+  // I'm having trouble doing instance of tests to see if something
+  // is a test suite, so i'll add a property nothing is likely to have
+  this.nodeAsyncTesting = 42;
 };
 TestSuite.prototype.finish = function() {
   if( this.finished ) {
@@ -137,34 +152,30 @@ TestSuite.prototype.finish = function() {
 
   this.finished = true;
 
-  sys.error('\nResults for ' + (this.name ? '"' + (this.name || '')+ '"' : 'unnamed suite') + ':');
   var failures = [];
-  var output = '';
   this.tests.forEach(function(t) {
       if( !t.__finished ) {
         t.finish();
       }
       if( t.__failure !== null ) {
+        this.numFailedTests++;
         failures.push(t);
       }
-      output += t.__symbol;
-    });
+    },this);
 
-  sys.error(output);
 
-  output = this.tests.length + ' test' + (this.tests.length == 1 ? '' : 's') + '; ';
+  output = '\n';
+  output += this.tests.length + ' test' + (this.tests.length == 1 ? '' : 's') + '; ';
   output += failures.length + ' failure' + (failures.length == 1 ? '' : 's') + '; ';
   output += this.numAssertions + ' assertion' + (this.numAssertions == 1 ? '' : 's') + ' ';
   sys.error(output);
 
+  sys.error('');
   failures.forEach(function(t) {
-      sys.error('');
-
-      sys.error('test "' + t.__name + '" failed: ');
-      sys.error(t.__failure.stack || t.__failure);
+      sys.error(t.failureString());
     });
 
-  sys.error('');
+  this.promise.emitSuccess();
 };
 
 TestSuite.prototype.setup = function(func) {
@@ -182,13 +193,16 @@ TestSuite.prototype.waitForTests = function(yesOrNo) {
   this.wait = yesOrNo;
   return this;
 };
-TestSuite.prototype.runTests = function(tests) {
-  sys.puts('\n' + (this.name? '"' + (this.name || '')+ '"' : 'unnamed suite'));
+TestSuite.prototype.addTests = function(tests) {
   for( var testName in tests ) {
     var t = new Test(testName, tests[testName], this);
     this.tests.push(t);
   };
 
+  return this;
+};
+TestSuite.prototype.runTests = function() {
+  sys.puts('Running "' + this.name + '"');
   this.runTest(0);
 };
 TestSuite.prototype.runTest = function(testIndex) {
@@ -204,6 +218,29 @@ TestSuite.prototype.runTest = function(testIndex) {
 
   var suite = this;
   var wait = suite.wait;
+
+  if(wait) {
+    // if we are waiting then let's assume we are only running one test at 
+    // a time, so we can catch all errors
+    var errorListener = function(err) {
+      if( t.listeners('uncaughtException').length > 0 ) {
+        t.emit('uncaughtException',err);
+      }
+      else {
+        t.failed(err);
+      }
+    };
+    process.addListener('uncaughtException', errorListener);
+
+    var exitListener = function() {
+      sys.error("\n\nOoops! The process excited in the middle of the test '" + t.__name + "'\nDid you forget to finish it?\n");
+    };
+    process.addListener('exit', exitListener);
+  }
+  else {
+    sys.error('  Starting test "' + this.__name + '"');
+  }
+
   t.__promise.addCallback(function(numAssertions) {
       if(suite._teardown) {
         suite._teardown.call(t,t);
@@ -213,6 +250,9 @@ TestSuite.prototype.runTest = function(testIndex) {
       suite.numFinishedTests++;
 
       if( wait ) {
+        process.stdio.writeError(t.__symbol);
+        process.removeListener('uncaughtException', errorListener);
+        process.removeListener('exit', exitListener);
         suite.runTest(testIndex+1);
       }
 
@@ -226,5 +266,43 @@ TestSuite.prototype.runTest = function(testIndex) {
   if( !wait ) {
     suite.runTest(testIndex+1);
   }
+};
 
+exports.runSuites = function(module, callback) {
+  var suites = [];
+
+  for( var suiteName in module ) {
+    var suite = module[suiteName];
+
+    if(suite && suite.nodeAsyncTesting == 42) {
+      suite.name = suiteName;
+      suites.push(suite);
+    }
+  }
+
+  var stats = {
+    numSuites: 0,
+    numFailed: 0
+  };
+
+  function runNextSuite() {
+    if( suites.length < 1 ) {
+      return callback ? callback(stats) : null;
+    }
+    var suite = suites.shift();
+    suite.runTests();
+    suite.promise.addCallback(function() {
+        if( suites.length > 0 ) {
+          sys.error('----------------------------------\n');
+        }
+        stats.numSuites++;
+        if( suite.numFailedTests > 0 ) {
+          stats.numFailed++;
+        }
+        runNextSuite();
+      });
+  }
+
+  sys.puts('');
+  runNextSuite();
 };

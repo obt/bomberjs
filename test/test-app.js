@@ -1,24 +1,24 @@
-var sys = require('sys');
-var TestSuite = require('../dependencies/node-async-testing/async_testing').TestSuite;
-var path = require('path');
+var sys = require('sys'),
+    path = require('path');
+
+var async_testing = require('../dependencies/node-async-testing/async_testing');
 
 // the testing apps assume that bomberjs is on the path.
 require.paths.push(path.dirname(__filename)+'/../..');
-
 var App = require('bomberjs/lib/app').App;
 var app_errors = require('bomberjs/lib/app').errors;
 
-(new TestSuite('App Tests'))
+exports['App Suite'] = (new async_testing.TestSuite())
   .setup(function() {
       this.project = {config: {}};
       this.project.base_app = this.app = new App('bomberjs/test/fixtures/testApp', this.project);
     })
-  .runTests({
-    "test app doesn't have to exist": function(test) {
+  .addTests({
+    "test app doesn't have to exist": function(assert) {
       // Since all parts of an app are optional when we create an
       // App object if it doesn't exist we can't verify this.
       // It just won't do anything.
-      test.assert.doesNotThrow(function() {
+      assert.doesNotThrow(function() {
           var app = new App('bomberjs/test/fixtures/nonExistantApp');
         });
     },
@@ -103,50 +103,50 @@ var app_errors = require('bomberjs/lib/app').errors;
       };
       this.assert.deepEqual(expected_app_four, this.app._configForApp(start, 'four'));
     },
-    "test load config": function(test) {
-      test.assert.equal(1, test.app.config.option_one);
-      test.assert.equal(2, test.app.config.option_two);
+    "test load config": function(assert) {
+      assert.equal(1, this.app.config.option_one);
+      assert.equal(2, this.app.config.option_two);
     },
-    "test load subapps": function(test) {
+    "test load subapps": function(assert) {
       //base test app has 1 sub app
-      test.assert.equal(1, count(test.app.apps));
+      assert.equal(1, count(this.app.apps));
 
       // first sub app has config passed to it from testApp
-      test.assert.deepEqual({option: true}, test.app.apps.subApp1.config);
+      assert.deepEqual({option: true}, this.app.apps.subApp1.config);
     },
-    "test subapp's parent is set": function(test) {
-      test.assert.equal(test.app, test.app.apps.subApp1.parent);
+    "test subapp's parent is set": function(assert) {
+      assert.equal(this.app, this.app.apps.subApp1.parent);
     },
-    "test can load non-existant view": function(test) {
+    "test can load non-existant view": function(assert) {
       // can't get a view that doesn't exist
-      test.assert.throws(function() {
-          test.app.getView('non-existant')
+      assert.throws(function() {
+          this.app.getView('non-existant')
         }, app_errors.ViewNotFoundError );
 
       // can't get a view from an app that doesn't exist
-      test.assert.throws(function() {
-          test.app.getView('view1', 'not-existant-app')
+      assert.throws(function() {
+          this.app.getView('view1', 'not-existant-app')
         }, app_errors.AppNotFoundError );
     },
-    "test load view": function(test) {
-      test.assert.ok(test.app.getView('view1'));
+    "test load view": function(assert) {
+      assert.ok(this.app.getView('view1'));
     },
-    "test load view from sub-app": function(test) {
+    "test load view from sub-app": function(assert) {
       // can dig down to get a view file from a subapp
-      var subAppView = test.app.getView('subApp1view1','subApp1');
-      test.assert.ok(subAppView);
+      var subAppView = this.app.getView('subApp1view1','subApp1');
+      assert.ok(subAppView);
       // this view has 1 function
-      test.assert.equal(1, count(subAppView));
+      assert.equal(1, count(subAppView));
     },
-    "test load routes": function(test) {
+    "test load routes": function(assert) {
       // test that we properly load in the routes
-      test.assert.equal(3, test.app.router._routes.length);
-      test.assert.equal(2, test.app.apps.subApp1.router._routes.length);
+      assert.equal(3, this.app.router._routes.length);
+      assert.equal(2, this.app.apps.subApp1.router._routes.length);
     },
-    "test getRoute will pass routing along": function(test) {
+    "test getRoute will pass routing along": function(assert) {
       // getRoute will pass the routing along if an app_key is passed in that
       // points to a sub app
-      var route = test.app.getRoute('GET', '/view_name/action_name', 'subApp1');
+      var route = this.app.getRoute('GET', '/view_name/action_name', 'subApp1');
       var expected = {
         "action": {
           "app": "subApp1",
@@ -155,12 +155,12 @@ var app_errors = require('bomberjs/lib/app').errors;
         },
         "params": {}
       };
-      test.assert.deepEqual(expected, route);
+      assert.deepEqual(expected, route);
     },
-    "test getRoute will pass routing along if it gets a partial route": function(test) {
+    "test getRoute will pass routing along if it gets a partial route": function(assert) {
       // getRoute will pass the routing along if it gets a partial route back
       // from the router
-      var route = test.app.getRoute('GET', '/deferToSubApp1/view_name/action_name');
+      var route = this.app.getRoute('GET', '/deferToSubApp1/view_name/action_name');
       var expected = {
         "action": {
           "app": "subApp1",
@@ -169,8 +169,8 @@ var app_errors = require('bomberjs/lib/app').errors;
         },
         "params": {}
       };
-      test.assert.deepEqual(expected, route);
-      route = test.app.getRoute('GET', '/deferToSubApp1/view_name/action_name/1');
+      assert.deepEqual(expected, route);
+      route = this.app.getRoute('GET', '/deferToSubApp1/view_name/action_name/1');
       expected = {
         "action": {
           "app": "subApp1",
@@ -179,27 +179,27 @@ var app_errors = require('bomberjs/lib/app').errors;
         },
         "params": {id: "1"}
       };
-      test.assert.deepEqual(expected, route);
+      assert.deepEqual(expected, route);
     },
-    "test errors are thrown appropriately": function(test) {
-      test.assert.throws(function() {
-          test.app.getAction({ app: 'non-existant', view: 'subApp1view1', action: 'action'});
+    "test errors are thrown appropriately": function(assert) {
+      assert.throws(function() {
+          this.app.getAction({ app: 'non-existant', view: 'subApp1view1', action: 'action'});
         }, app_errors.AppNotFoundError);
-      test.assert.throws(function() {
-          test.app.getAction({ app: 'subApp1', view: 'non-existant', action: 'action'});
+      assert.throws(function() {
+          this.app.getAction({ app: 'subApp1', view: 'non-existant', action: 'action'});
         }, app_errors.ViewNotFoundError);
-      test.assert.throws(function() {
-          test.app.getAction({ app: 'subApp1', view: 'subApp1view1', action: 'non-existant'});
+      assert.throws(function() {
+          this.app.getAction({ app: 'subApp1', view: 'subApp1view1', action: 'non-existant'});
         }, app_errors.ActionNotFoundError);
     },
-    "test can load action": function(test) {
-      test.assert.ok(test.app.getAction({ app: 'subApp1', view: 'subApp1view1', action: 'action'}));
+    "test can load action": function(assert) {
+      assert.ok(this.app.getAction({ app: 'subApp1', view: 'subApp1view1', action: 'action'}));
     },
-    "test can specify a function in a route": function(test) {
+    "test can specify a function in a route": function(assert) {
       var func = function() {};
-      test.assert.equal(func, test.app.getAction({action: func}));
+      assert.equal(func, this.app.getAction({action: func}));
     },
-    "test _parseAppPath": function(test) {
+    "test _parseAppPath": function(assert) {
       var app_keys = {
         '': [],
         '.': [],
@@ -219,17 +219,17 @@ var app_errors = require('bomberjs/lib/app').errors;
         '/testApp/sub/app/stuff': ['sub', 'app/stuff']
       };
       for(var key in app_keys) {
-        test.assert.deepEqual(app_keys[key], test.app._parseAppPath(key));
+        assert.deepEqual(app_keys[key], this.app._parseAppPath(key));
       }
     },
-    "test modulePathToKey": function(test) {
-      test.assert.equal(path.basename(process.cwd()), App.modulePathToAppKey('.'));
-      test.assert.equal('path', App.modulePathToAppKey('./my/path'));
-      test.assert.equal('path', App.modulePathToAppKey('/my/path'));
-      test.assert.equal('path', App.modulePathToAppKey('my/path'));
-      test.assert.equal('path', App.modulePathToAppKey('./path'));
-      test.assert.equal('path', App.modulePathToAppKey('/path'));
-      test.assert.equal('path', App.modulePathToAppKey('path'));
+    "test modulePathToKey": function(assert) {
+      assert.equal(path.basename(process.cwd()), App.modulePathToAppKey('.'));
+      assert.equal('path', App.modulePathToAppKey('./my/path'));
+      assert.equal('path', App.modulePathToAppKey('/my/path'));
+      assert.equal('path', App.modulePathToAppKey('my/path'));
+      assert.equal('path', App.modulePathToAppKey('./path'));
+      assert.equal('path', App.modulePathToAppKey('/path'));
+      assert.equal('path', App.modulePathToAppKey('path'));
     }
   });
 
@@ -241,3 +241,6 @@ function count(object) {
   return count;
 }
 
+if (module === require.main) {
+  async_testing.runSuites(exports);
+}

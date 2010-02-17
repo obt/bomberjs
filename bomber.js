@@ -34,7 +34,7 @@
 
 var sys = require('sys');
 var path = require('path');
-var posix = require('posix');
+var fs = process.fs;
  
 // We depend on bomberjs being on the path, so wrap this require
 // for a module we need in a try catch, and so if bomberjs isn't in
@@ -56,70 +56,72 @@ catch(err) {
 // run_tests eventually).  Down the line I'd like apps to be able
 // to write their own tasks
 var bomberjs_location = path.normalize(path.join(require('bomberjs/lib/utils').require_resolve('bomberjs/lib/app'),'../../'));
-var dir = posix.readdir(path.join(bomberjs_location,'lib/tasks')).wait();
-var tasks = {};
-dir.forEach(function(file) {
-    if( !file.match(/\.js$/) ) {
-      return;
-    }
-    var p = 'bomberjs/lib/tasks/'+file.substr(0,file.length-3);
-    tasks[path.basename(p)] = p;
-  });
 
-
-// ARGV[0] always equals node
-// ARGV[1] always equals bomber.js
-// so we ignore those
-var argv = process.ARGV.slice(2);
-
-// parse arguments
-var opts = {};
-while( argv.length > 0 ) {
-  var stop = false;
-  switch(argv[0]) {
-    case "--tasks":
-    case "-t":
-      opts['tasks'] = true;
-      break;
-    case "--app":
-    case "-a":
-      opts['app'] = argv[1];
-      argv.splice(0,1);
-      break;
-    default:
-      stop = true;
-  }
-  if( stop ) {
-    break;
-  }
-  argv.splice(0,1);
-}
-
-// the global scope that all apps (and objects, I guess) will have access too.
-var project = {config: {}};
-
-// create the base app for the project
-project.base_app = new App(opts.app, project);
-
-//TODO: allow apps to be able to supply their own tasks and load them
-// here
-
-if( opts.tasks ) {
-  sys.puts('Available tasks:');
-  Object.keys(tasks).forEach(function(task) {
-    sys.print("  ");
-    sys.puts(task);
+fs.readdir(path.join(bomberjs_location,'lib/tasks'), function(errored, dir) {
+  var tasks = {};
+  dir.forEach(function(file) {
+      if( !file.match(/\.js$/) ) {
+        return;
+      }
+      var p = 'bomberjs/lib/tasks/'+file.substr(0,file.length-3);
+      tasks[path.basename(p)] = p;
     });
-}
-else if( argv.length == 0) {
-  sys.puts("Script for managing Bomber apps.\nhttp://bomber.obtdev.com/");
-}
-else {
-  if( !(argv[0] in tasks) ) {
-    sys.puts("Unknown task: "+argv[0]);
+
+
+  // ARGV[0] always equals node
+  // ARGV[1] always equals bomber.js
+  // so we ignore those
+  var argv = process.ARGV.slice(2);
+
+  // parse arguments
+  var opts = {};
+  while( argv.length > 0 ) {
+    var stop = false;
+    switch(argv[0]) {
+      case "--tasks":
+      case "-t":
+        opts['tasks'] = true;
+        break;
+      case "--app":
+      case "-a":
+        opts['app'] = argv[1];
+        argv.splice(0,1);
+        break;
+      default:
+        stop = true;
+    }
+    if( stop ) {
+      break;
+    }
+    argv.splice(0,1);
+  }
+
+  // the global scope that all apps (and objects, I guess) will have access too.
+  var project = {config: {}};
+
+  // create the base app for the project
+  project.base_app = new App(opts.app, project);
+
+  //TODO: allow apps to be able to supply their own tasks and load them
+  // here
+
+  if( opts.tasks ) {
+    sys.puts('Available tasks:');
+    Object.keys(tasks).forEach(function(task) {
+      sys.print("  ");
+      sys.puts(task);
+      });
+  }
+  else if( argv.length == 0) {
+    sys.puts("Script for managing Bomber apps.\nhttp://bomber.obtdev.com/");
   }
   else {
-    var task = argv.shift();
-    require(tasks[task]).task(project, argv);
+    if( !(argv[0] in tasks) ) {
+      sys.puts("Unknown task: "+argv[0]);
+    }
+    else {
+      var task = argv.shift();
+      require(tasks[task]).task(project, argv);
+    }
   }
-}
+});

@@ -1,75 +1,80 @@
 var sys = require('sys');
-var TestSuite = require('../dependencies/node-async-testing/async_testing').TestSuite;
 
-var responses = require('../lib/http_responses');
-var BomberResponse = require('../lib/response').Response;
-var MockResponse = require('./mocks/response').MockResponse;
+var async_testing = require('../dependencies/node-async-testing/async_testing');
 
-(new TestSuite('Default HTTPResponse tests'))
-  .setup(function(test) {
-      test.mr = new MockResponse();
-      test.br = new BomberResponse(test.mr);
-    })
-  .runTests({
-    "test a default response": function(test) {
-      var r = new responses.HTTP200OK();
-      r.respond(test.br);
+var responses = require('../lib/http_responses'),
+    BomberResponse = require('../lib/response').Response,
+    MockResponse = require('./mocks/response').MockResponse;
 
-      test.assert.equal(200, test.mr.status);
-      test.assert.equal('HTTP200OK', test.mr.bodyText);
-      test.assert.ok(test.mr.finished);
-    },
-    "test can set body in constructor": function(test) {
-      var r = new responses.HTTP200OK('body');
-
-      r.respond(test.br);
-      test.assert.equal('body', test.mr.bodyText);
-    },
-    "test can set body explicitly": function(test) {
-      var r = new responses.HTTP200OK();
-      r.body = 'body';
-
-      r.respond(test.br);
-      test.assert.equal('body', test.mr.bodyText);
-    },
-    "test can set Content-Type": function(test) {
-      var r = new responses.HTTP200OK();
-      r.mimeType = 'mimetype';
-      r.respond(test.br);
-
-      test.assert.equal('mimetype', test.mr.headers['Content-Type']);
-    },
-    "test can set status": function(test) {
-      var r = new responses.HTTP200OK();
-      r.status = 200;
-      r.respond(test.br);
-
-      test.assert.equal(200, test.mr.status);
-    },
-  });
-
-(new TestSuite('HTTPResponse Redirect tests'))
+exports['Default HTTPResponse tests'] = (new async_testing.TestSuite())
   .setup(function() {
       this.mr = new MockResponse();
       this.br = new BomberResponse(this.mr);
     })
-  .runTests({
-    "test redirect with no status": function(test) {
-      var r = new responses.redirect('url');
-      r.respond(test.br);
+  .addTests({
+    "test a default response": function(assert) {
+      var r = new responses.HTTP200OK();
+      r.respond(this.br);
 
-      test.assert.equal(301, test.mr.status);
-      test.assert.equal('url', test.mr.headers.Location);
-      test.assert.equal('', test.mr.bodyText);
-      test.assert.ok(test.mr.finished);
+      assert.equal(200, this.mr.status);
+      assert.equal('HTTP200OK', this.mr.bodyText);
+      assert.ok(this.mr.closed);
     },
-    "test redirect with status": function(test) {
-      var r = new responses.redirect('url', 1);
-      r.respond(test.br);
+    "test can set body in constructor": function(assert) {
+      var r = new responses.HTTP200OK('body');
 
-      test.assert.equal(1, test.mr.status);
-      test.assert.equal('url', test.mr.headers.Location);
-      test.assert.equal('', test.mr.bodyText);
-      test.assert.ok(test.mr.finished);
+      r.respond(this.br);
+      assert.equal('body', this.mr.bodyText);
+    },
+    "test can set body explicitly": function(assert) {
+      var r = new responses.HTTP200OK();
+      r.body = 'body';
+
+      r.respond(this.br);
+      assert.equal('body', this.mr.bodyText);
+    },
+    "test can set Content-Type": function(assert) {
+      var r = new responses.HTTP200OK();
+      r.mimeType = 'mimetype';
+      r.respond(this.br);
+
+      assert.equal('mimetype', this.mr.headers['Content-Type']);
+    },
+    "test can set status": function(assert) {
+      var r = new responses.HTTP200OK();
+      r.status = 200;
+      r.respond(this.br);
+
+      assert.equal(200, this.mr.status);
     },
   });
+
+exports['HTTPResponse Redirect tests'] = (new async_testing.TestSuite())
+  .setup(function() {
+      this.mr = new MockResponse();
+      this.br = new BomberResponse(this.mr);
+    })
+  .addTests({
+    "test redirect with no status": function(assert) {
+      var r = new responses.redirect('url');
+      r.respond(this.br);
+
+      assert.equal(301, this.mr.status);
+      assert.equal('url', this.mr.headers.Location);
+      assert.equal('', this.mr.bodyText);
+      assert.ok(this.mr.closed);
+    },
+    "test redirect with status": function(assert) {
+      var r = new responses.redirect('url', 1);
+      r.respond(this.br);
+
+      assert.equal(1, this.mr.status);
+      assert.equal('url', this.mr.headers.Location);
+      assert.equal('', this.mr.bodyText);
+      assert.ok(this.mr.closed);
+    },
+  });
+
+if (module === require.main) {
+  async_testing.runSuites(exports);
+}

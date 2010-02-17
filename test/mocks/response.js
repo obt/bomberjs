@@ -12,27 +12,27 @@ var MockResponse = function() {
   this.headers = null;
   this.body = [];
   this.bodyText = '';
-  this.finished = false;
+  this.closed = false;
 };
 MockResponse.prototype.sendHeader = function(status, headers) {
-  if( this.finished ) {
-    throw "Already finished";
+  if( this.closed ) {
+    throw "Already closed";
   }
   this.status = status;
   this.headers = headers;
 };
-MockResponse.prototype.sendBody = function(chunk, encoding) {
-  if( this.finished ) {
-    throw "Already finished";
+MockResponse.prototype.write = function(chunk, encoding) {
+  if( this.closed ) {
+    throw "Already closed";
   }
   this.body.push([chunk, encoding]);
   this.bodyText += chunk;
 };
-MockResponse.prototype.finish = function() {
-  if( this.finished ) {
-    throw "Already finished";
+MockResponse.prototype.close = function() {
+  if( this.closed ) {
+    throw "Already closed";
   }
-  this.finished = true;
+  this.closed = true;
 };
 
 exports.MockResponse = MockResponse;

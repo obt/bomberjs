@@ -1,19 +1,20 @@
 var sys = require('sys');
-var TestSuite = require('../dependencies/node-async-testing/async_testing').TestSuite;
 
-var BomberRequest = require('../lib/request').Request;
-var MockRequest = require('./mocks/request').MockRequest;
+var async_testing = require('../dependencies/node-async-testing/async_testing');
 
-(new TestSuite('Request Tests'))
+var BomberRequest = require('../lib/request').Request,
+    MockRequest = require('./mocks/request').MockRequest;
+
+exports['Request Tests'] = (new async_testing.TestSuite())
   .setup(function() {
       this.mr = new MockRequest('POST', '/');
       this.br = new BomberRequest(this.mr, {"href": "/", "pathname": "/"}, {});
     })
-  .runTests({
-    "test simple": function(test) {
-      this.assert.equal(this.mr.method, this.br.method);
+  .addTests({
+    "test simple": function(assert) {
+      assert.equal(this.mr.method, this.br.method);
     },
-    "test load data": function(test) {
+    "test load data": function(assert, finished) {
       var sent = 'foo=bar&baz%5Bquux%5D=asdf&baz%5Boof%5D=rab&boo%5B%5D=1';
       var parsed = {
           "foo": "bar",
@@ -26,43 +27,52 @@ var MockRequest = require('./mocks/request').MockRequest;
           ]
         };
 
-      var p = test.br.loadData();
+      var p = this.br.loadData();
       p.addCallback(function(data) {
-          test.assert.deepEqual(parsed, data);
+          assert.deepEqual(parsed, data);
+          finished();
         });
 
-      test.mr.emit('body',sent);
-      test.mr.emit('complete');
+      this.mr.emit('body',sent);
+      this.mr.emit('complete');
     },
-    "test load data -- no parse": function(test) {
+    "test load data -- no parse": function(assert, finished) {
       var sent = 'foo=bar&baz%5Bquux%5D=asdf&baz%5Boof%5D=rab&boo%5B%5D=1';
 
-      var p = test.br.loadData(false);
+      var p = this.br.loadData(false);
       p.addCallback(function(data) {
-          test.assert.equal(sent, data);
+          assert.equal(sent, data);
+          finished();
         });
 
-      test.mr.emit('body',sent);
-      test.mr.emit('complete');
+      this.mr.emit('body',sent);
+      this.mr.emit('complete');
     },
-    "test buffers": function(test) {
+    "test buffers": function(assert, finished) {
       var dataLoaded = false;
 
       var first = 'one',
           second = 'two';
 
-      var p = test.br.loadData(false);
+      var p = this.br.loadData(false);
       p.addCallback(function(data) {
-          test.assert.equal(first+second, data);
+          assert.equal(first+second, data);
           dataLoaded = true;
         });
 
-      test.assert.ok(!dataLoaded);
-      test.mr.emit('body',first);
-      test.assert.ok(!dataLoaded);
-      test.mr.emit('body',second);
-      test.assert.ok(!dataLoaded);
-      test.mr.emit('complete');
-      test.assert.ok(dataLoaded);
+      assert.ok(!dataLoaded);
+      this.mr.emit('body',first);
+      assert.ok(!dataLoaded);
+      this.mr.emit('body',second);
+      assert.ok(!dataLoaded);
+      this.mr.emit('complete');
+      assert.ok(dataLoaded);
+      process.nextTick(function() {
+          finished();
+        });
     },
   });
+
+if (module === require.main) {
+  async_testing.runSuites(exports);
+}

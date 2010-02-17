@@ -1,5 +1,5 @@
 var sys = require('sys');
-var posix = require('posix');
+var fs = require('fs');
 var path = require('path');
 
 var HTTP301MovedPermanently = require('bomberjs/lib/http_responses').HTTP301MovedPermanently;
@@ -89,8 +89,8 @@ exports.lorem = function(request, response) {
 
   var filename = path.join(path.dirname(__filename),'../resources/text.txt');
   
-  // posix.cat returns a Node promise. Which at this time isn't chainable
+  // fs.cat returns a Node promise. Which at this time isn't chainable
   // so this example is pretty simple.  But once we can chain, I'll show
   // how to manipulate the result as you move through the chain.
-  return posix.cat(filename);
+  return fs.readFile(filename);
 };
