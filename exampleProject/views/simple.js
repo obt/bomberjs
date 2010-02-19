@@ -49,6 +49,8 @@ exports.env = function(request, response) {
     });
   html += "</dl>";
 
+  response.cookies.unset('hello');
+
   html += "<p>Currently set session vars</p>";
   html += "<dl>";
   request.session.keys().forEach(function(key) {

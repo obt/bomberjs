@@ -14,7 +14,7 @@ var fs = require("fs"),
     path = require("path"),
     sys = require("sys"),
     events = require("events"),
-    sha1 = require('../dependencies/sha1');
+    sha1 = require('bomberjs/dependencies/sha1');
 
 /* DirectoryStore()
  * 
@@ -126,7 +126,7 @@ var DirectoryStore = exports.DirectoryStore = function (location) {
     var get = function(namespace, key) {
         var filename = valuePath(namespace, key);
         var p = new events.Promise();
-        var catPromise = fs.cat(filename);
+        var catPromise = fs.readFile(filename);
         
         catPromise.addCallback(function(content) {
            p.emitSuccess(JSON.parse(content)); 
