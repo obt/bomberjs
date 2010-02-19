@@ -48,13 +48,13 @@ exports['Chainable Events'] = (new async_testing.TestSuite())
         finishTest();
       };
 
-      test.obj.listen('event', function(obj) {
+      test.obj.listen('event', function(obj, cb) {
           assert.equal(1, obj);
-          return 2
+          cb(2);
         });
-      test.obj.listen('event', function(obj) {
+      test.obj.listen('event', function(obj, cb) {
           assert.equal(2, obj);
-          return 3
+          cb(3);
         });
 
       test.obj.emit('event', finished, null, 1);
@@ -67,11 +67,13 @@ exports['Chainable Events'] = (new async_testing.TestSuite())
         finishTest();
       };
 
-      test.obj.listen('event', function() {
+      test.obj.listen('event', function(cb) {
           assert.equal(test.obj, this);
+          cb();
         });
-      test.obj.listen('event', function() {
+      test.obj.listen('event', function(cb) {
           assert.equal(test.obj, this);
+          cb();
         });
 
       test.obj.emit('event', finished);
@@ -86,18 +88,19 @@ exports['Chainable Events'] = (new async_testing.TestSuite())
 
       var count = 0;
 
-      var step = function(val) {
+      var step = function(returned, old, cb) {
         count++;
-        assert.equal(val, count);
+        assert.equal(returned[0], count);
+        cb.apply(null, returned);
       };
 
-      test.obj.listen('event', function(val) {
+      test.obj.listen('event', function(val, cb) {
           assert.equal(0, val);
-          return val+1;
+          cb(val+1);
         });
-      test.obj.listen('event', function(val) {
+      test.obj.listen('event', function(val, cb) {
           assert.equal(1, val);
-          return val+1;
+          cb(val+1);
         });
 
       test.obj.emit('event', finished, step, 0);
@@ -112,24 +115,23 @@ exports['Chainable Events'] = (new async_testing.TestSuite())
 
       var count = 0;
 
-      var step = function(val) {
+      var step = function(returned, old, cb) {
         count++;
         // should be called once
         assert.equal(1, count);
         process.nextTick(function() {
             finishTest();
           });
-        return true;
       };
 
-      test.obj.listen('event', function(val) {
+      test.obj.listen('event', function(val, cb) {
           assert.ok(true);
-          return val;
+          cb(val);
         });
-      test.obj.listen('event', function(val) {
+      test.obj.listen('event', function(val, cb) {
           // should not be called
           assert.ok(false);
-          return val;
+          cb(val);
         });
 
       test.obj.emit('event', finished, step, 0);
