@@ -1,4 +1,3 @@
-var sys = require('sys');
 var Session = exports.Session = function(data, options) {
   this._modified = false;
   this._frozen = false;

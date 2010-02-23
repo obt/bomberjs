@@ -14,7 +14,7 @@ var fs = require("fs"),
     path = require("path"),
     sys = require("sys"),
     events = require("events"),
-    sha1 = require('bomberjs/dependencies/sha1');
+    sha1 = require('bomberjs/bundled/sha1');
 
 /* DirectoryStore()
  * 

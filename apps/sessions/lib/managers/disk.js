@@ -1,4 +1,4 @@
-var sha1 = require('bomberjs/dependencies/sha1'),
+var sha1 = require('bomberjs/bundled/sha1'),
     Cookies = require('bomberjs/lib/cookies').Cookies;
 
 var Session = require('../session').Session,
