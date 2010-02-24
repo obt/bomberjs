@@ -1,7 +1,7 @@
 var sys = require('sys');
 var path = require('path');
 
-var async_testing = require('../dependencies/node-async-testing/async_testing');
+var async_testing = require('../bundled/async-testing/async_testing');
 
 var BomberResponse = require('../lib/response').Response;
 var MockResponse = require('./mocks/response').MockResponse;

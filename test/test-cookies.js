@@ -1,8 +1,8 @@
 var sys = require('sys'),
     path = require('path');
 
-var async_testing = require('../dependencies/node-async-testing/async_testing'),
-    httpclient = require('../dependencies/node-httpclient/lib/httpclient');
+var async_testing = require('../bundled/async-testing/async_testing'),
+    httpclient = require('../bundled/httpclient/lib/httpclient');
 
 // the testing apps assume that bomberjs is on the path.
 require.paths.push(path.dirname(__filename)+'/../..');
@@ -10,15 +10,16 @@ var BomberServer = require('bomberjs/lib/server').Server;
 var App = require('bomberjs/lib/app').App;
 
 exports['Cookie Tests -- over HTTP'] = (new async_testing.TestSuite())
-  .setup(function() {
+  .setup(function(finished) {
     this.project = {config:{}};
     this.project.base_app = new App('bomberjs/test/fixtures/testApp', this.project);
     this.server = new BomberServer(this.project);
-    this.server.start();
 
     this.url_base = 'http://localhost:'+this.project.config.server.port+'/cookie-tests/';
 
     this.client = new httpclient.httpclient();
+
+    this.server.start(finished);
   })
   .teardown(function() {
     this.server.stop();
@@ -26,6 +27,7 @@ exports['Cookie Tests -- over HTTP'] = (new async_testing.TestSuite())
   .addTests({
     "test set cookie": function(assert, finished, test) {
       test.client.perform(test.url_base+'set?name1=value1&name2=value2', "GET", function(result) {
+          assert.equal(200, result.response.status);
           // client reads them fine
           assert.equal('value1', test.client.getCookie('localhost','name1'));
           assert.equal('value2', test.client.getCookie('localhost','name2'));

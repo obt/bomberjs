@@ -1,6 +1,6 @@
 var sys = require('sys');
 
-var async_testing = require('../dependencies/node-async-testing/async_testing');
+var async_testing = require('../bundled/async-testing/async_testing');
 
 var utils = require('../lib/utils');
 

@@ -10,6 +10,6 @@ exports.load = function(app, project) {
     var manager = require(project.config.sessions.storage_method);
 
     project.sessionManager = null;
-    project.server.listen('start', function(next) { manager.start(project, next); });
+    project.server.listen('start', function() { return manager.start(project); });
   }
 };

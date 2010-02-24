@@ -1,6 +1,7 @@
 var sys = require('sys');
 
-var async_testing = require('../dependencies/node-async-testing/async_testing');
+var async_testing = require('../bundled/async-testing/async_testing'),
+    promise = require('../bundled/promise/promise');
 
 var makeChainable = require('../lib/chainable').makeChainable;
 
@@ -48,16 +49,41 @@ exports['Chainable Events'] = (new async_testing.TestSuite())
         finishTest();
       };
 
-      test.obj.listen('event', function(obj, cb) {
+      test.obj.listen('event', function(obj) {
           assert.equal(1, obj);
-          cb(2);
+          return 2;
         });
-      test.obj.listen('event', function(obj, cb) {
+      test.obj.listen('event', function(obj) {
           assert.equal(2, obj);
-          cb(3);
+          return 3;
         });
 
       test.obj.emit('event', finished, null, 1);
+    },
+    "test listener can return promise": function(assert, finishTest, test) {
+      test.numAssertionsExpected = 3;
+
+      var finished = function(val) {
+        assert.equal(3, val);
+        finishTest();
+      };
+
+      var p1 = new promise.Promise();
+      var p2 = new promise.Promise();
+
+      test.obj.listen('event', function(obj) {
+          assert.equal(1, obj);
+          return p1;
+        });
+      test.obj.listen('event', function(obj) {
+          assert.equal(2, obj);
+          return p2;
+        });
+
+      test.obj.emit('event', finished, null, 1);
+
+      p1.resolve(2);
+      p2.resolve(3);
     },
     "test this always points to the emitting object": function(assert, finishTest, test) {
       test.numAssertionsExpected = 3;
@@ -67,13 +93,11 @@ exports['Chainable Events'] = (new async_testing.TestSuite())
         finishTest();
       };
 
-      test.obj.listen('event', function(cb) {
+      test.obj.listen('event', function() {
           assert.equal(test.obj, this);
-          cb();
         });
-      test.obj.listen('event', function(cb) {
+      test.obj.listen('event', function() {
           assert.equal(test.obj, this);
-          cb();
         });
 
       test.obj.emit('event', finished);
@@ -90,17 +114,17 @@ exports['Chainable Events'] = (new async_testing.TestSuite())
 
       var step = function(returned, old, cb) {
         count++;
-        assert.equal(returned[0], count);
-        cb.apply(null, returned);
+        assert.equal(returned, count);
+        cb(returned);
       };
 
-      test.obj.listen('event', function(val, cb) {
+      test.obj.listen('event', function(val) {
           assert.equal(0, val);
-          cb(val+1);
+          return val+1;
         });
-      test.obj.listen('event', function(val, cb) {
+      test.obj.listen('event', function(val) {
           assert.equal(1, val);
-          cb(val+1);
+          return val+1;
         });
 
       test.obj.emit('event', finished, step, 0);
@@ -124,14 +148,14 @@ exports['Chainable Events'] = (new async_testing.TestSuite())
           });
       };
 
-      test.obj.listen('event', function(val, cb) {
+      test.obj.listen('event', function(val) {
           assert.ok(true);
-          cb(val);
+          return val;
         });
-      test.obj.listen('event', function(val, cb) {
+      test.obj.listen('event', function(val) {
           // should not be called
           assert.ok(false);
-          cb(val);
+          return val;
         });
 
       test.obj.emit('event', finished, step, 0);

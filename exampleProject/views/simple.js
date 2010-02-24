@@ -1,6 +1,7 @@
-var sys = require('sys');
-var fs = require('fs');
-var path = require('path');
+var fs = require('fs'),
+    path = require('path');
+
+var promise = require('bomberjs/bundled/promise/promise');
 
 var HTTP301MovedPermanently = require('bomberjs/lib/http_responses').HTTP301MovedPermanently;
 
@@ -94,5 +95,5 @@ exports.lorem = function(request, response) {
   // fs.cat returns a Node promise. Which at this time isn't chainable
   // so this example is pretty simple.  But once we can chain, I'll show
   // how to manipulate the result as you move through the chain.
-  return fs.readFile(filename);
+  return promise.execute(fs.readFile, filename);
 };

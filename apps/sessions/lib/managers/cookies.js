@@ -1,23 +1,21 @@
 var Cookies = require('bomberjs/lib/cookies').Cookies;
+var sys = require('sys');
 
 var Session = require('../session').Session;
 
-exports.start = function(project, callback) {
+exports.start = function(project) {
   project.sessionManager = new SessionManager(project);
 
-  project.server.listen('request', function(request, response, next) {
-      response.listen('head', function(head, headNext) {
-          project.sessionManager.save(head.headers, request.session);
-          headNext(head);
+  project.server.listen('request', function(rr) {
+      rr.response.listen('head', function(head) {
+          project.sessionManager.save(head.headers, rr.request.session);
+          return head;
         });
 
-      project.sessionManager.load(request, function(session) {
-          request.session = response.session = session;
-          next(request, response);
-        });
+      rr.request.session = rr.response.session = project.sessionManager.load(rr.request);
+
+      return rr;
     });
-
-  callback();
 }
 
 var SessionManager = function(project) {
@@ -25,11 +23,11 @@ var SessionManager = function(project) {
   this.secret = project.config.security.signing_secret;
 };
 
-SessionManager.prototype.load = function(request, next) {  
+SessionManager.prototype.load = function(request) {  
   var data = JSON.parse(request.cookies.getSecure(this.options.cookie.name,'null'));
   var session = new Session(data, this.options);
 
-  next(session);
+  return session;
 };
 
 SessionManager.prototype.save = function(headers, session) {

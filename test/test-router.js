@@ -1,7 +1,7 @@
 var sys = require('sys'),
     path = require('path');
 
-var async_testing = require('../dependencies/node-async-testing/async_testing');
+var async_testing = require('../bundled/async-testing/async_testing');
 
 var Router = require('../lib/router').Router,
     BomberResponse = require('../lib/response').Response,
@@ -138,7 +138,9 @@ exports['Router Tests'] = (new async_testing.TestSuite())
       var route = this.r.findRoute('GET','/resources/file.txt');
       assert.equal(route.params.filename, 'file.txt');
     },
-    "test generate function serves file": function(assert) {
+    "test generate function serves file": function(assert, finished) {
+      this.numAssertionsExpected = 2;
+
       this.r.addFolder();
 
       var url = '/resources/file.txt';
@@ -150,12 +152,14 @@ exports['Router Tests'] = (new async_testing.TestSuite())
       var request = new BomberRequest(mrequest, {"href": url, "pathname": url}, route);
       var response = new BomberResponse(mresponse);
 
-      route.action.action(request, response).wait();
-
-      assert.equal(200, mresponse.status);
-      assert.equal('text\n', mresponse.bodyText);
+      route.action.action(request, response)
+        .then(function() {
+            assert.equal(200, mresponse.status);
+            assert.equal('text\n', mresponse.bodyText);
+            finished();
+          });
     },
-    "test generate function serves file from absolute folder": function(assert) {
+    "test generate function serves file from absolute folder": function(assert, finished) {
       this.r.addFolder({folder: path.dirname(__filename)+'/fixtures/testApp/resources/'});
 
       var url = '/resources/file.txt';
@@ -167,11 +171,14 @@ exports['Router Tests'] = (new async_testing.TestSuite())
       var request = new BomberRequest(mrequest, {"href": url, "pathname": url}, route);
       var response = new BomberResponse(mresponse);
 
-      route.action.action(request, response).wait();
+      route.action.action(request, response)
+        .then(function() {
+            assert.equal(200, mresponse.status);
+            finished();
+          });
 
-      assert.equal(200, mresponse.status);
     },
-    "test returns 404 for non-existant file": function(assert) {
+    "test returns 404 for non-existant file": function(assert, finished) {
       this.r.addFolder({folder: path.dirname(__filename)+'/fixtures/testApp/resources/'});
 
       var url = '/resources/non-existant';
@@ -183,9 +190,11 @@ exports['Router Tests'] = (new async_testing.TestSuite())
       var request = new BomberRequest(mrequest, {"href": url, "pathname": url}, route);
       var response = new BomberResponse(mresponse);
 
-      var http_response = route.action.action(request, response).wait();
-
-      assert.equal('HTTP404NotFound', http_response.name);
+      route.action.action(request, response)
+        .then(function(http_response) {
+            assert.equal('HTTP404NotFound', http_response.name);
+            finished();
+          });
     },
   });
 

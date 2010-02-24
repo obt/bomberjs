@@ -1,6 +1,6 @@
 var sys = require('sys');
 
-var async_testing = require('../dependencies/node-async-testing/async_testing');
+var async_testing = require('../bundled/async-testing/async_testing');
 
 var BomberRequest = require('../lib/request').Request,
     MockRequest = require('./mocks/request').MockRequest;
@@ -66,8 +66,8 @@ exports['Request Tests'] = (new async_testing.TestSuite())
       this.mr.emit('body',second);
       assert.ok(!dataLoaded);
       this.mr.emit('complete');
-      assert.ok(dataLoaded);
       process.nextTick(function() {
+          assert.ok(dataLoaded);
           finished();
         });
     },

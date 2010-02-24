@@ -1,7 +1,7 @@
 var sys = require('sys'),
     path = require('path');
 
-var async_testing = require('../dependencies/node-async-testing/async_testing');
+var async_testing = require('../bundled/async-testing/async_testing');
 
 // the testing apps assume that bomberjs is on the path.
 require.paths.push(path.dirname(__filename)+'/../..');
@@ -88,18 +88,18 @@ exports['App Suite'] = (new async_testing.TestSuite())
       this.assert.deepEqual(expected_app_two, this.app._configForApp(start, 'two'));
 
       var expected_app_three_from_app_two = {
-        "server": { option: 1 },
-        "one": { option: 1 },
-        "two": { option: 1 },
-         ".": { option: 1 }
+        "server": { option: true },
+        "one": { option: true },
+        "two": { option: true },
+         ".": { option: true }
       };
       this.assert.deepEqual(expected_app_three_from_app_two, this.app._configForApp(expected_app_two, 'three'));
 
       var expected_app_four = {
-        "server": { option: 1 },
-        "one": { option: 1 },
-        "two": { option: 1 },
-        ".": { option: 1 }
+        "server": { option: true },
+        "one": { option: true },
+        "two": { option: true },
+        ".": { option: true }
       };
       this.assert.deepEqual(expected_app_four, this.app._configForApp(start, 'four'));
     },
