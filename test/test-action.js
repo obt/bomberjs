@@ -1,5 +1,5 @@
 var sys = require('sys');
-var promise = require('../bundled/promise/promise');
+var promise = require('../bundled/promise');
 
 var async_testing = require('../bundled/async-testing/async_testing');
 

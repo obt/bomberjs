@@ -1,7 +1,7 @@
 var sys = require('sys');
 
 var async_testing = require('../bundled/async-testing/async_testing'),
-    promise = require('../bundled/promise/promise');
+    promise = require('../bundled/promise');
 
 var makeChainable = require('../lib/chainable').makeChainable;
 

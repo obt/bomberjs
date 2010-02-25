@@ -1,7 +1,7 @@
 var fs = require('fs'),
     path = require('path');
 
-var promise = require('bomberjs/bundled/promise/promise');
+var promise = require('bomberjs/bundled/promise');
 
 var HTTP301MovedPermanently = require('bomberjs/lib/http_responses').HTTP301MovedPermanently;
 
