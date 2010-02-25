@@ -121,12 +121,12 @@ exports['App Suite'] = (new async_testing.TestSuite())
       // can't get a view that doesn't exist
       assert.throws(function() {
           this.app.getView('non-existant')
-        }, app_errors.ViewNotFoundError );
+        } );
 
       // can't get a view from an app that doesn't exist
       assert.throws(function() {
           this.app.getView('view1', 'not-existant-app')
-        }, app_errors.AppNotFoundError );
+        } );
     },
     "test load view": function(assert) {
       assert.ok(this.app.getView('view1'));
@@ -184,13 +184,13 @@ exports['App Suite'] = (new async_testing.TestSuite())
     "test errors are thrown appropriately": function(assert) {
       assert.throws(function() {
           this.app.getAction({ app: 'non-existant', view: 'subApp1view1', action: 'action'});
-        }, app_errors.AppNotFoundError);
+        });
       assert.throws(function() {
           this.app.getAction({ app: 'subApp1', view: 'non-existant', action: 'action'});
-        }, app_errors.ViewNotFoundError);
+        });
       assert.throws(function() {
           this.app.getAction({ app: 'subApp1', view: 'subApp1view1', action: 'non-existant'});
-        }, app_errors.ActionNotFoundError);
+        });
     },
     "test can load action": function(assert) {
       assert.ok(this.app.getAction({ app: 'subApp1', view: 'subApp1view1', action: 'action'}));
