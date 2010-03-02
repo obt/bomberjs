@@ -1,6 +1,6 @@
 var path = require('path');
 
-var promise = require('../bundled/promise');
+var promise = require('bomberjs/bundled/promise');
 
 /* Router()
  *
@@ -119,7 +119,7 @@ Router.prototype.addFolder = function(params) {
   var addFolderAction = function(request, response) {
     // Make sure there's not access to the parent folder
     if( request.params.filename.indexOf('..') >= 0 || request.params.filename.indexOf('./') >= 0 ) {
-      return new response.build.forbidden();
+      return new response.quick.forbidden();
     }
 
     // Resolve file
@@ -129,17 +129,15 @@ Router.prototype.addFolder = function(params) {
     }
 
     return response.sendFile(filename)
-            .then(
-                null,
-                function(err) {
-                  if( err.message == "No such file or directory" ) {
-                    return new response.build.notFound();
-                  }
-                  else if(err.message == "Permission denied") {
-                    return  new response.build.forbidden();
-                  }
-                  throw err;
-                });
+      .then(null, function(err) {
+          if( err.message == "No such file or directory" ) {
+            return new response.quick.notFound();
+          }
+          else if(err.message == "Permission denied") {
+            return  new response.quick.forbidden();
+          }
+          throw err;
+        });
   };
 
   this.add(params.path + ':filename', {folder: params.folder, filename :'[^\\\\]+', action: addFolderAction});

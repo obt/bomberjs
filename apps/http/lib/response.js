@@ -1,11 +1,11 @@
 var fs = require('fs');
 var sys = require('sys');
 
-var promise = require('../bundled/promise'),
-    mime = require('../bundled/mime');
+var promise = require('bomberjs/bundled/promise'),
+    mime = require('bomberjs/bundled/mime');
 
-var responses = require('./http_responses'),
-    makeChainable = require('./chainable').makeChainable;
+var responses = require('./quick_responses'),
+    makeChainable = require('bomberjs/lib/chainable').makeChainable;
 
 /* Response(res)
  *
@@ -59,10 +59,10 @@ Response.__bytesToRead = 16384; // 16 * 1024
 
 /* Response.prototype.build
  *
- * Shortcut to require('bomberjs/lib/http_responses') for making easy/quick 
+ * Shortcut to require('bomberjs/lib/quick_responses') for making easy/quick 
  * responses.
  */
-Response.prototype.build = responses;
+Response.prototype.quick = responses;
 
 /* Response.prototype.finishOnSend
  *

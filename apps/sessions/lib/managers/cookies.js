@@ -1,12 +1,11 @@
-var Cookies = require('bomberjs/lib/cookies').Cookies;
-var sys = require('sys');
+var Cookies = require('bomberjs/apps/http/apps/cookies/lib/cookies').Cookies;
 
 var Session = require('../session').Session;
 
-exports.start = function(project) {
+exports.startup = function(project) {
   project.sessionManager = new SessionManager(project);
 
-  project.server.listen('request', function(rr) {
+  project.pipe('request', {after: 'cookies'}, function(rr) {
       rr.response.listen('head', function(head) {
           project.sessionManager.save(head.headers, rr.request.session);
           return head;

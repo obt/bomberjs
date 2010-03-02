@@ -16,7 +16,7 @@ exports.project_config = {
     //   way to store simple session values, but complex data probably shouldn't
     //   be handled with cookies. Also, stuff written to the session after the
     //   request headers have been sent won't be saved.
-    storage_method: 'cookies',
+    manager: 'cookies',
 
     // Directory for on-disk storage of sessions
     disk_storage_location: '/tmp/',

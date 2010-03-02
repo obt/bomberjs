@@ -1,8 +1,8 @@
 var querystring = require('querystring');
 
-var promise = require('../bundled/promise');
+var promise = require('bomberjs/bundled/promise');
 
-var makeChainable = require('./chainable').makeChainable;
+var makeChainable = require('bomberjs/lib/chainable').makeChainable;
 
 /* Request(req, url, route)
  *

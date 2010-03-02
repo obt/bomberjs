@@ -1,5 +1,8 @@
-var promise = require('../bundled/promise');
-var HTTPResponse = require('./http_responses').HTTPResponse;
+var sys = require('sys');
+
+var promise = require('bomberjs/bundled/promise');
+
+var QuickResponse = require('./quick_responses').QuickResponse;
 
 exports.processAction = function(request, response, action) {
   var p = new promise.Promise();
@@ -27,7 +30,7 @@ function complete(request, response, p, action_response) {
   if( typeof action_response == "undefined" ) {
     // Do nothing. The action must have taken care of a response.
   }
-  else if( action_response instanceof HTTPResponse ) {
+  else if( action_response instanceof QuickResponse ) {
     action_response.respond(response);
   }
   else {

@@ -5,4 +5,7 @@ exports.project_config = {
   },
 };
 
-exports.apps = ['bomberjs/apps/sessions'];
+exports.apps = [
+  'bomberjs/apps/http',
+  'bomberjs/apps/sessions'
+];

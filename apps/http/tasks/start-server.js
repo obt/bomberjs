@@ -1,5 +1,3 @@
-var BomberServer = require('bomberjs/lib/server').Server;
-
 exports.task = function(project, argv) {
   // parse arguments
   var opts = {};
@@ -15,7 +13,8 @@ exports.task = function(project, argv) {
     argv.splice(0,1);
   }
 
-  // create and start server
-  var bs = new BomberServer(project, opts);
-  bs.start();
+  // merge the command line configuration
+  process.mixin(project.config.server, opts);
+
+  project.server.start();
 };

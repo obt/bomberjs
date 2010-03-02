@@ -1,4 +1,4 @@
-var Router = require('bomberjs/lib/router').Router;
+var Router = require('bomberjs/apps/http/lib/router').Router;
 
 var r = new Router();
 

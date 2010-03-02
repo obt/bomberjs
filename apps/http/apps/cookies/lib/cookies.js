@@ -2,7 +2,7 @@ var querystring = require("querystring");
 var sys = require('sys');
 
 // We'll be using HMAC-SHA1 to sign cookies
-var sha1 = require('../bundled/sha1');
+var sha1 = require('bomberjs/bundled/sha1');
 
 var Cookies = exports.Cookies = function(request, response, project) {
   // The cookie headers for this request
