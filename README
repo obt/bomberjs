@@ -1,0 +1,5 @@
+Bomber is a Node web framework inspired by Rails, Django and anything else out
+there that has caught our eye.
+
+Warning! Right now the API is very much in a state of flux.  Don't expect
+anything to work.  :)  The best place to get started would be examples folder.
