@@ -88,13 +88,9 @@ exports.load = function(app, project) {
     // this example shows some asynchronous stuff at work!
     response.session.set('lorem_views', response.session.get('lorem_views') + 1);
 
-    response.mimeType = 'text/plain';
-
     var filename = path.join(path.dirname(__filename),'../resources/text.txt');
     
-    // fs.cat returns a Node promise. Which at this time isn't chainable
-    // so this example is pretty simple.  But once we can chain, I'll show
-    // how to manipulate the result as you move through the chain.
+    response.mimeType = 'text/plain';
     return promise.execute(fs.readFile, filename);
   };
 
