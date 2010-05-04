@@ -21,7 +21,7 @@ catch(err) {
 /******** load in default tasks *****/
 // we use the 'guessAppLocation' from the lib/app.js because it is basically
 // just a way to figure out the location of a module
-var guessAppLocation = require('bomberjs/lib/app').guessAppLocation;
+var guessAppLocation = require('bomberjs/lib/app')._guessAppLocation;
 var bomberjs_location = path.normalize(path.join(guessAppLocation('bomberjs/lib/app', true),'../../'));
 
 var dir = fs.readdirSync(path.join(bomberjs_location,'lib/tasks'));
@@ -61,7 +61,7 @@ while( argv.length > 0 ) {
 }
 
 /******** create project *****/
-var project = project.create(opts.app);
+var project = project.create(opts.app || '.');
 
 /******** load app tasks *****/
 project.eachApp(function(app) {

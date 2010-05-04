@@ -1,8 +1,6 @@
 var sys = require('sys'),
-    path = require('path');
-
-var async_testing = require('../bundled/async-testing/async_testing'),
-    promise = require('../bundled/promise');
+    path = require('path'),
+    async_testing = require('async_testing');
 
 // make sure bomberjs is on the path
 require.paths.push(path.dirname(__filename)+'/../..');
