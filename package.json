@@ -1,0 +1,12 @@
+{ "name": "bomber"
+, "description": "web framework"
+, "version": "0.0.1"
+, "author": "Benjamin Thomas"
+, "main": "./lib/bomber"
+, "modules":
+  { "contrib/pipes/layout":          "./contrib/pipes/layout.js"
+  , "contrib/pipes/render":          "./contrib/pipes/render.js"
+  , "contrib/actions/serveFolder":   "./contrib/actions/serveFolder.js"
+  }
+}
+

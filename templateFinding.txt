@@ -1,0 +1,2 @@
+this/is/my/action
+  {EACHAPP}/{APP_TEMPLATE_DIR}/this/is/my/action.DEFAULT
